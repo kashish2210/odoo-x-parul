@@ -1,4 +1,5 @@
 {% extends 'base.html' %}
+{% load static %}
 {% block title %}Dashboard — Traveloop{% endblock %}
 
 {% block content %}
@@ -13,39 +14,39 @@
   <!-- Banner Slider -->
   <div class="dash-banner banner-slider">
     <div class="slide" id="bannerSlide">
-      <div class="item" style="background-image: url('https://images.unsplash.com/photo-1478760329108-5c3ed9d495a0?q=80&w=1074&auto=format&fit=crop');">
+      <div class="item" style="background-image: url('{% static 'images/cities/paris/1.jpeg' %}');">
         <div class="content">
-          <div class="name">Explore the World</div>
-          <div class="des">Plan trips, discover cities, and travel smarter. Experience the mystical Highlands.</div>
-          <a class="seeMore" href="#"><button class="btn btn-primary">See More</button></a>
+          <div class="name">Paris</div>
+          <div class="des">The city of lights — art, cuisine, and romance along the Seine.</div>
+          <a class="seeMore" href="{% url 'destinations:activity-search' %}?q=paris"><button class="btn btn-primary">Explore</button></a>
         </div>
       </div>
-      <div class="item" style="background-image: url('https://images.unsplash.com/photo-1439792675105-701e6a4ab6f0?q=80&w=1173&auto=format&fit=crop');">
+      <div class="item" style="background-image: url('{% static 'images/cities/tokyo/1.jpeg' %}');">
         <div class="content">
-          <div class="name">Norway</div>
-          <div class="des">Chase the Northern Lights under star-lit skies along scenic fjord roads.</div>
-          <a class="seeMore" href="#"><button class="btn btn-primary">See More</button></a>
+          <div class="name">Tokyo</div>
+          <div class="des">Neon-lit streets, ancient temples, and the pulse of modern Japan.</div>
+          <a class="seeMore" href="{% url 'destinations:activity-search' %}?q=tokyo"><button class="btn btn-primary">Explore</button></a>
         </div>
       </div>
-      <div class="item" style="background-image: url('https://images.unsplash.com/photo-1483982258113-b72862e6cff6?q=80&w=1170&auto=format&fit=crop');">
+      <div class="item" style="background-image: url('{% static 'images/cities/rio/1.jpeg' %}');">
         <div class="content">
-          <div class="name">New Zealand</div>
-          <div class="des">Wander dramatic, mist-laden mountain paths that feel straight out of a dream.</div>
-          <a class="seeMore" href="#"><button class="btn btn-primary">See More</button></a>
+          <div class="name">Rio de Janeiro</div>
+          <div class="des">Carnival rhythms, golden beaches, and the iconic Christ the Redeemer.</div>
+          <a class="seeMore" href="{% url 'destinations:activity-search' %}?q=rio"><button class="btn btn-primary">Explore</button></a>
         </div>
       </div>
-      <div class="item" style="background-image: url('https://images.unsplash.com/photo-1477346611705-65d1883cee1e?q=80&w=2070&auto=format&fit=crop');">
+      <div class="item" style="background-image: url('{% static 'images/cities/capetown/1.jpeg' %}');">
         <div class="content">
-          <div class="name">Japan</div>
-          <div class="des">Discover serene mountain temples shrouded in dusk and ancient forest trails.</div>
-          <a class="seeMore" href="#"><button class="btn btn-primary">See More</button></a>
+          <div class="name">Cape Town</div>
+          <div class="des">Where two oceans meet — mountains, coasts, and vibrant culture.</div>
+          <a class="seeMore" href="{% url 'destinations:activity-search' %}?q=cape+town"><button class="btn btn-primary">Explore</button></a>
         </div>
       </div>
-      <div class="item" style="background-image: url('https://images.unsplash.com/photo-1506748686214-e9df14d4d9d0?q=80&w=1000&auto=format&fit=crop');">
+      <div class="item" style="background-image: url('{% static 'images/cities/reykjavik/1.jpeg' %}');">
         <div class="content">
-          <div class="name">Switzerland</div>
-          <div class="des">Experience the alpine beauty and pristine lakes.</div>
-          <a class="seeMore" href="#"><button class="btn btn-primary">See More</button></a>
+          <div class="name">Reykjavik</div>
+          <div class="des">Northern lights, geysers, and otherworldly volcanic landscapes.</div>
+          <a class="seeMore" href="{% url 'destinations:activity-search' %}?q=reykjavik"><button class="btn btn-primary">Explore</button></a>
         </div>
       </div>
     </div>
@@ -99,41 +100,53 @@
   </div>
   <div class="card-grid">
     <div class="trip-card">
-      <div class="card-img"><svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M8 3l4 8 5-5 5 15H2L8 3z"></path></svg></div>
-      <div class="card-body">
-        <h4>Himalayas</h4>
-        <p>India · Mountain treks</p>
+      <div class="card-img" style="background-image:linear-gradient(180deg,rgba(0,0,0,0) 40%,rgba(0,0,0,0.55) 100%),url('{% static 'images/cities/bali/1.jpeg' %}');background-size:cover;background-position:center;">
+        <span style="position:absolute;bottom:8px;left:10px;color:#fff;font-family:'Caveat',cursive;font-size:1.3rem;text-shadow:0 1px 6px rgba(0,0,0,0.6);z-index:2;">Bali</span>
       </div>
-    </div>
-    <div class="trip-card">
-      <div class="card-img"><svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M22 20a2 2 0 1 1-4 0c0-1.6 1.7-2.4 2-4 .3 1.6 2 2.4 2 4z"></path><path d="M2 15h10"></path><path d="M9 11v4"></path><path d="M5 15v4"></path><path d="M12 15a6 6 0 0 1 6-6V5h-3v4a6 6 0 0 1-6 6"></path></svg></div>
       <div class="card-body">
         <h4>Bali</h4>
         <p>Indonesia · Beach paradise</p>
       </div>
     </div>
     <div class="trip-card">
-      <div class="card-img"><svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2v20"></path><path d="M8 22h8"></path><path d="M10 14h4"></path><path d="M11 6h2"></path><path d="M6 18l3-12"></path><path d="M18 18l-3-12"></path></svg></div>
+      <div class="card-img" style="background-image:linear-gradient(180deg,rgba(0,0,0,0) 40%,rgba(0,0,0,0.55) 100%),url('{% static 'images/cities/marrakesh/1.jpeg' %}');background-size:cover;background-position:center;">
+        <span style="position:absolute;bottom:8px;left:10px;color:#fff;font-family:'Caveat',cursive;font-size:1.3rem;text-shadow:0 1px 6px rgba(0,0,0,0.6);z-index:2;">Marrakesh</span>
+      </div>
       <div class="card-body">
-        <h4>Paris</h4>
-        <p>France · City of lights</p>
+        <h4>Marrakesh</h4>
+        <p>Morocco · Spice markets & riads</p>
       </div>
     </div>
     <div class="trip-card">
-      <div class="card-img"><svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2c1 3 2.5 3.5 3.5 4.5A5 5 0 0 1 17 12c0 2-2 3-5 5-3-2-5-3-5-5a5 5 0 0 1 1.5-5.5C9.5 5.5 11 5 12 2z"></path></svg></div>
+      <div class="card-img" style="background-image:linear-gradient(180deg,rgba(0,0,0,0) 40%,rgba(0,0,0,0.55) 100%),url('{% static 'images/cities/vancouver/1.jpeg' %}');background-size:cover;background-position:center;">
+        <span style="position:absolute;bottom:8px;left:10px;color:#fff;font-family:'Caveat',cursive;font-size:1.3rem;text-shadow:0 1px 6px rgba(0,0,0,0.6);z-index:2;">Vancouver</span>
+      </div>
       <div class="card-body">
-        <h4>Tokyo</h4>
-        <p>Japan · Culture & tech</p>
+        <h4>Vancouver</h4>
+        <p>Canada · Mountains & ocean</p>
       </div>
     </div>
     <div class="trip-card">
-      <div class="card-img"><svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="7" r="4"></circle><path d="M2 21h20"></path><path d="M4 21v-4a8 8 0 0 1 16 0v4"></path></svg></div>
+      <div class="card-img" style="background-image:linear-gradient(180deg,rgba(0,0,0,0) 40%,rgba(0,0,0,0.55) 100%),url('{% static 'images/cities/bangkok/1.jpeg' %}');background-size:cover;background-position:center;">
+        <span style="position:absolute;bottom:8px;left:10px;color:#fff;font-family:'Caveat',cursive;font-size:1.3rem;text-shadow:0 1px 6px rgba(0,0,0,0.6);z-index:2;">Bangkok</span>
+      </div>
       <div class="card-body">
-        <h4>Dubai</h4>
-        <p>UAE · Luxury & desert</p>
+        <h4>Bangkok</h4>
+        <p>Thailand · Temples & street food</p>
+      </div>
+    </div>
+    <div class="trip-card">
+      <div class="card-img" style="background-image:linear-gradient(180deg,rgba(0,0,0,0) 40%,rgba(0,0,0,0.55) 100%),url('{% static 'images/cities/lisbon/1.jpeg' %}');background-size:cover;background-position:center;">
+        <span style="position:absolute;bottom:8px;left:10px;color:#fff;font-family:'Caveat',cursive;font-size:1.3rem;text-shadow:0 1px 6px rgba(0,0,0,0.6);z-index:2;">Lisbon</span>
+      </div>
+      <div class="card-body">
+        <h4>Lisbon</h4>
+        <p>Portugal · Historic charm</p>
       </div>
     </div>
   </div>
+
+
 
   <!-- Previous Trips -->
   <div class="section-header">
@@ -226,4 +239,6 @@
 <!-- FAB - Plan a trip -->
 <a href="{% url 'trip_create' %}" class="fab" title="Plan a new trip" id="fabNewTrip">+</a>
 {% endblock %}
+
+
 

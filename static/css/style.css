@@ -586,8 +586,8 @@ textarea.form-control {
 }
 
 @keyframes animateSliderText {
-  from { opacity: 0; transform: translate(0, 50px); filter: blur(5px); }
-  to { opacity: 1; transform: translate(0); filter: blur(0); }
+  from { opacity: 0; transform: translate(0, 50px); }
+  to { opacity: 1; transform: translate(0); }
 }
 
 .banner-slider .slider-controls {
@@ -717,6 +717,7 @@ textarea.form-control {
 }
 
 .trip-card .card-img {
+  position: relative;
   height: 140px;
   background: var(--bg-secondary);
   display: flex;
@@ -724,6 +725,7 @@ textarea.form-control {
   justify-content: center;
   font-size: 3rem;
   border-bottom: var(--border-sketch);
+  overflow: hidden;
 }
 
 .trip-card .card-body {
@@ -1274,3 +1276,136 @@ textarea.form-control {
   margin-left: 4px;
 }
 
+/* ========== SLIDESHOW POPUP (global) ========== */
+.slideshow-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.85);
+  backdrop-filter: blur(6px);
+  display: none;
+  align-items: center;
+  justify-content: center;
+  z-index: 2500;
+  padding: 1rem;
+}
+.slideshow-overlay.open { display: flex; }
+
+.slideshow-container {
+  position: relative;
+  width: min(860px, 95vw);
+  height: min(460px, 70vh);
+  background: var(--bg-card);
+  border-radius: 20px;
+  box-shadow: 0 30px 60px rgba(0,0,0,0.5);
+  overflow: hidden;
+}
+
+.slideshow-slide {
+  border-radius: 20px;
+  height: 100%;
+  width: 100%;
+}
+
+.slideshow-item {
+  width: 200px;
+  height: 260px;
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  border-radius: 20px;
+  box-shadow: 0 20px 40px rgba(0,0,0,0.4);
+  background-position: center;
+  background-size: cover;
+  transition: all 0.5s ease;
+  cursor: pointer;
+}
+
+.slideshow-item:nth-child(1),
+.slideshow-item:nth-child(2) {
+  top: 0; left: 0;
+  transform: none;
+  border-radius: 20px;
+  width: 100%; height: 100%;
+}
+
+.slideshow-item:nth-child(3) { left: 50%; }
+.slideshow-item:nth-child(4) { left: calc(50% + 220px); }
+.slideshow-item:nth-child(5) { left: calc(50% + 440px); }
+.slideshow-item:nth-child(n+6) { left: calc(50% + 660px); opacity: 0; }
+
+.slideshow-item-content {
+  position: absolute;
+  bottom: 40px;
+  left: 40px;
+  color: #fff;
+  text-shadow: 0 2px 12px rgba(0,0,0,0.6);
+  display: none;
+}
+.slideshow-item:nth-child(2) .slideshow-item-content { display: block; }
+
+.slideshow-item-name {
+  font-family: 'Caveat', cursive;
+  font-size: 2.6rem;
+  font-weight: 700;
+  opacity: 0;
+  animation: ssSlideIn 0.8s ease forwards;
+}
+.slideshow-item-des {
+  font-size: 0.95rem;
+  margin-top: 6px;
+  opacity: 0;
+  animation: ssSlideIn 0.8s ease 0.25s forwards;
+}
+
+@keyframes ssSlideIn {
+  from { opacity: 0; transform: translateY(30px); }
+  to   { opacity: 1; transform: translateY(0);    }
+}
+
+.slideshow-close {
+  position: absolute;
+  top: 14px; right: 18px;
+  z-index: 10;
+  background: rgba(0,0,0,0.45);
+  backdrop-filter: blur(4px);
+  border: none;
+  color: #fff;
+  font-size: 1.6rem;
+  width: 38px; height: 38px;
+  border-radius: 50%;
+  cursor: pointer;
+  display: flex; align-items: center; justify-content: center;
+  transition: all 0.2s;
+}
+.slideshow-close:hover { background: rgba(255,255,255,0.3); transform: scale(1.1); }
+
+.slideshow-buttons {
+  display: flex;
+  gap: 12px;
+  position: absolute;
+  bottom: 16px;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 10;
+}
+.slideshow-btn {
+  width: 42px; height: 38px;
+  border-radius: 10px;
+  border: 2px solid rgba(255,255,255,0.5);
+  background: rgba(255,255,255,0.2);
+  backdrop-filter: blur(4px);
+  color: #fff;
+  cursor: pointer;
+  display: flex; align-items: center; justify-content: center;
+  transition: all 0.3s;
+}
+.slideshow-btn:hover { background: rgba(255,255,255,0.45); transform: scale(1.1); }
+
+@media (max-width: 640px) {
+  .slideshow-container { height: min(340px, 60vh); }
+  .slideshow-item { width: 140px; height: 180px; }
+  .slideshow-item:nth-child(3) { left: 55%; }
+  .slideshow-item:nth-child(4) { left: calc(55% + 160px); }
+  .slideshow-item-content { left: 20px; bottom: 30px; }
+  .slideshow-item-name { font-size: 1.8rem; }
+}

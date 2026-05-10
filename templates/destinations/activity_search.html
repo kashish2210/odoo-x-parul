@@ -1,4 +1,5 @@
 {% extends 'base.html' %}
+{% load static %}
 {% block title %}Activity Search — Traveloop{% endblock %}
 
 {% block extra_css %}
@@ -233,11 +234,146 @@
     .search-form { grid-template-columns: 1fr; }
     .search-hero h1 { font-size: 1.9rem; }
   }
+  /* ═══ IMAGE SLIDESHOW POPUP ═══ */
+  .slideshow-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,0.85);
+    backdrop-filter: blur(6px);
+    display: none;
+    align-items: center;
+    justify-content: center;
+    z-index: 2500;
+    padding: 1rem;
+  }
+  .slideshow-overlay.open { display: flex; }
+
+  .slideshow-container {
+    position: relative;
+    width: min(860px, 95vw);
+    height: min(460px, 70vh);
+    background: var(--bg-card);
+    border-radius: 20px;
+    box-shadow: 0 30px 60px rgba(0,0,0,0.5);
+    overflow: hidden;
+  }
+
+  .slideshow-slide {
+    border-radius: 20px;
+    height: 100%;
+    width: 100%;
+  }
+
+  .slideshow-item {
+    width: 200px;
+    height: 260px;
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    border-radius: 20px;
+    box-shadow: 0 20px 40px rgba(0,0,0,0.4);
+    background-position: center;
+    background-size: cover;
+    transition: all 0.5s ease;
+    cursor: pointer;
+  }
+
+  .slideshow-item:nth-child(1),
+  .slideshow-item:nth-child(2) {
+    top: 0; left: 0;
+    transform: none;
+    border-radius: 20px;
+    width: 100%; height: 100%;
+  }
+
+  .slideshow-item:nth-child(3) { left: 50%; }
+  .slideshow-item:nth-child(4) { left: calc(50% + 220px); }
+  .slideshow-item:nth-child(5) { left: calc(50% + 440px); }
+  .slideshow-item:nth-child(n+6) { left: calc(50% + 660px); opacity: 0; }
+
+  .slideshow-item-content {
+    position: absolute;
+    bottom: 40px;
+    left: 40px;
+    color: #fff;
+    text-shadow: 0 2px 12px rgba(0,0,0,0.6);
+    display: none;
+  }
+  .slideshow-item:nth-child(2) .slideshow-item-content { display: block; }
+
+  .slideshow-item-name {
+    font-family: 'Caveat', cursive;
+    font-size: 2.6rem;
+    font-weight: 700;
+    opacity: 0;
+    animation: ssSlideIn 0.8s ease forwards;
+  }
+  .slideshow-item-des {
+    font-size: 0.95rem;
+    margin-top: 6px;
+    opacity: 0;
+    animation: ssSlideIn 0.8s ease 0.25s forwards;
+  }
+
+  @keyframes ssSlideIn {
+    from { opacity: 0; transform: translateY(30px); }
+    to   { opacity: 1; transform: translateY(0);    }
+  }
+
+  .slideshow-close {
+    position: absolute;
+    top: 14px; right: 18px;
+    z-index: 10;
+    background: rgba(0,0,0,0.45);
+    backdrop-filter: blur(4px);
+    border: none;
+    color: #fff;
+    font-size: 1.6rem;
+    width: 38px; height: 38px;
+    border-radius: 50%;
+    cursor: pointer;
+    display: flex; align-items: center; justify-content: center;
+    transition: all 0.2s;
+  }
+  .slideshow-close:hover { background: rgba(255,255,255,0.3); transform: scale(1.1); }
+
+  .slideshow-buttons {
+    display: flex;
+    gap: 12px;
+    position: absolute;
+    bottom: 16px;
+    left: 50%;
+    transform: translateX(-50%);
+    z-index: 10;
+  }
+  .slideshow-btn {
+    width: 42px; height: 38px;
+    border-radius: 10px;
+    border: 2px solid rgba(255,255,255,0.5);
+    background: rgba(255,255,255,0.2);
+    backdrop-filter: blur(4px);
+    color: #fff;
+    cursor: pointer;
+    display: flex; align-items: center; justify-content: center;
+    transition: all 0.3s;
+  }
+  .slideshow-btn:hover { background: rgba(255,255,255,0.45); transform: scale(1.1); }
+
+  @media (max-width: 640px) {
+    .slideshow-container { height: min(340px, 60vh); }
+    .slideshow-item { width: 140px; height: 180px; }
+    .slideshow-item:nth-child(3) { left: 55%; }
+    .slideshow-item:nth-child(4) { left: calc(55% + 160px); }
+    .slideshow-item-content { left: 20px; bottom: 30px; }
+    .slideshow-item-name { font-size: 1.8rem; }
+  }
 </style>
 {% endblock %}
 
+
 {% block content %}
 <div class="search-shell">
+
   <section class="search-hero">
     <h1>Browse activities</h1>
     <p>
@@ -342,11 +478,11 @@
              data-duration="{{ activity.duration_minutes }}"
              data-popularity="{{ activity.city.popularity_score }}"
              data-image-url="{% if activity.image %}{{ activity.image.url }}{% endif %}">
-      <div class="card-img">
+      <div class="card-img" data-city-slug="{{ activity.city.name|lower }}" data-card-index="{{ forloop.counter }}">
         {% if activity.image %}
           <img src="{{ activity.image.url }}" alt="{{ activity.name }}">
         {% else %}
-          <span style="font-size:3rem;">{{ activity.city.name|slice:":1"|upper }}</span>
+          <span style="position:absolute;bottom:8px;left:10px;color:#fff;font-family:'Caveat',cursive;font-size:1.3rem;text-shadow:0 1px 6px rgba(0,0,0,0.6);z-index:2;">{{ activity.city.name }}</span>
         {% endif %}
       </div>
       <div class="card-body">
@@ -419,59 +555,126 @@
     </div>
   </div>
 </div>
+
+<!-- ═══ IMAGE SLIDESHOW POPUP ═══ -->
+<div id="slideshowOverlay" class="slideshow-overlay" aria-hidden="true">
+  <div class="slideshow-container">
+    <button class="slideshow-close" id="slideshowClose">&times;</button>
+    <div class="slideshow-slide" id="slideshowSlide"></div>
+    <div class="slideshow-buttons">
+      <button class="slideshow-btn" id="slideshowPrev">
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="15 18 9 12 15 6"/></svg>
+      </button>
+      <button class="slideshow-btn" id="slideshowNext">
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="9 18 15 12 9 6"/></svg>
+      </button>
+    </div>
+  </div>
+</div>
 {% endblock %}
 
 {% block extra_js %}
 <script>
   document.addEventListener('DOMContentLoaded', () => {
-    const overlay = document.getElementById('quickViewOverlay');
-    const closeBtn = document.getElementById('quickViewClose');
-    const media = document.getElementById('quickViewMedia');
-    const title = document.getElementById('quickViewTitle');
-    const description = document.getElementById('quickViewDescription');
-    const location = document.getElementById('quickViewLocation');
-    const category = document.getElementById('quickViewCategory');
-    const cost = document.getElementById('quickViewCost');
-    const duration = document.getElementById('quickViewDuration');
-    const popularity = document.getElementById('quickViewPopularity');
-
-    const closeOverlay = () => {
-      overlay.classList.remove('open');
-      overlay.setAttribute('aria-hidden', 'true');
+    // ═══ City → Static Image Folder Mapping ═══
+    const CITY_IMAGE_MAP = {
+      'bangkok':'bangkok','bali':'bali','cape town':'capetown','capetown':'capetown',
+      'japan':'japan','lisbon':'lisbon','marrakesh':'marrakesh','marrakech':'marrakesh',
+      'new york':'northamerica','north america':'northamerica','paris':'paris',
+      'reykjavik':'reykjavik','rio de janeiro':'rio','rio':'rio',
+      'sydney':'sydney','thailand':'thailand','tokyo':'tokyo','vancouver':'vancouver'
     };
+    const CITY_COUNT = {
+      bangkok:5,bali:5,capetown:5,japan:5,lisbon:5,marrakesh:5,northamerica:5,
+      paris:5,reykjavik:5,rio:5,sydney:5,thailand:5,tokyo:5,vancouver:5,default:15
+    };
+    const BASE = '/static/images/cities/';
 
-    document.querySelectorAll('.js-quick-view').forEach((button) => {
-      button.addEventListener('click', (event) => {
-        const card = event.currentTarget.closest('.activity-card');
+    function slug(city) { return CITY_IMAGE_MAP[city.toLowerCase()] || 'default'; }
+    function imgUrl(city, i) {
+      const s = slug(city), t = CITY_COUNT[s]||5;
+      return BASE + s + '/' + (((i-1)%t)+1) + '.jpeg';
+    }
+
+    // ═══ Assign Images to Result Cards ═══
+    document.querySelectorAll('.card-img[data-city-slug]').forEach(el => {
+      if (el.querySelector('img')) return;
+      const url = imgUrl(el.dataset.citySlug, parseInt(el.dataset.cardIndex)||1);
+      el.style.cssText += `background-image:linear-gradient(180deg,rgba(0,0,0,0) 40%,rgba(0,0,0,0.55) 100%),url('${url}');background-size:cover;background-position:center;cursor:pointer;`;
+    });
+
+    // ═══ Slideshow Popup ═══
+    const ssO = document.getElementById('slideshowOverlay');
+    const ssS = document.getElementById('slideshowSlide');
+    const ssC = document.getElementById('slideshowClose');
+    const ssN = document.getElementById('slideshowNext');
+    const ssP = document.getElementById('slideshowPrev');
+
+    function openSS(city) {
+      const s = slug(city), t = CITY_COUNT[s]||5;
+      const name = city.charAt(0).toUpperCase() + city.slice(1);
+      let h = '';
+      for (let i=1; i<=t; i++) {
+        h += `<div class="slideshow-item" style="background-image:url('${BASE+s+'/'+i+'.jpeg'}')">
+          <div class="slideshow-item-content">
+            <div class="slideshow-item-name">${name}</div>
+            <div class="slideshow-item-des">Photo ${i} of ${t}</div>
+          </div></div>`;
+      }
+      ssS.innerHTML = h;
+      ssO.classList.add('open');
+    }
+    function closeSS() { ssO.classList.remove('open'); ssS.innerHTML = ''; }
+
+    ssC.addEventListener('click', closeSS);
+    ssO.addEventListener('click', e => { if(e.target===ssO) closeSS(); });
+    ssN.addEventListener('click', () => { const i=ssS.querySelectorAll('.slideshow-item'); if(i.length) ssS.appendChild(i[0]); });
+    ssP.addEventListener('click', () => { const i=ssS.querySelectorAll('.slideshow-item'); if(i.length) ssS.prepend(i[i.length-1]); });
+
+    // Click card image → open slideshow
+    document.querySelectorAll('.card-img[data-city-slug]').forEach(el => {
+      el.addEventListener('click', () => openSS(el.dataset.citySlug));
+    });
+
+    // ═══ Quick View (detail panel with mini slideshow) ═══
+    const qvO = document.getElementById('quickViewOverlay');
+    const qvC = document.getElementById('quickViewClose');
+    const qvM = document.getElementById('quickViewMedia');
+
+    function closeQV() { qvO.classList.remove('open'); }
+
+    document.querySelectorAll('.js-quick-view').forEach(btn => {
+      btn.addEventListener('click', e => {
+        e.stopPropagation();
+        const card = e.currentTarget.closest('.activity-card');
         if (!card) return;
+        const city = card.dataset.city||'';
+        const s = slug(city), t = CITY_COUNT[s]||5;
+        // Mini slideshow in quick view media
+        let h = '<div style="width:100%;height:100%;position:relative;border-radius:14px 14px 0 0;overflow:hidden;" id="qvSl">';
+        for(let i=1;i<=t;i++) h += `<div class="slideshow-item" style="background-image:url('${imgUrl(city,i)}')"></div>`;
+        h += '</div><div style="position:absolute;bottom:8px;left:50%;transform:translateX(-50%);display:flex;gap:8px;z-index:10;">';
+        h += '<button onclick="var s=document.getElementById(\'qvSl\'),i=s.querySelectorAll(\'.slideshow-item\');if(i.length)s.prepend(i[i.length-1])" class="slideshow-btn" style="width:32px;height:28px;font-size:0.8rem;">';
+        h += '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="15 18 9 12 15 6"/></svg></button>';
+        h += '<button onclick="var s=document.getElementById(\'qvSl\'),i=s.querySelectorAll(\'.slideshow-item\');if(i.length)s.appendChild(i[0])" class="slideshow-btn" style="width:32px;height:28px;font-size:0.8rem;">';
+        h += '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="9 18 15 12 9 6"/></svg></button></div>';
+        qvM.innerHTML = h;
+        qvM.style.position = 'relative';
 
-        const imageUrl = card.dataset.imageUrl;
-        if (imageUrl) {
-          media.innerHTML = `<img src="${imageUrl}" alt="${card.dataset.title}">`;
-        } else {
-          media.innerHTML = '<div style="height:100%;display:flex;align-items:center;justify-content:center;font-size:4rem;">✈️</div>';
-        }
-
-        title.textContent = card.dataset.title || '';
-        description.textContent = card.dataset.description || 'No description added yet.';
-        location.textContent = `${card.dataset.city || ''}, ${card.dataset.country || ''} · ${card.dataset.region || ''}`;
-        category.textContent = card.dataset.category || '';
-        cost.textContent = `Cost: ${card.dataset.cost || ''}`;
-        duration.textContent = `Duration: ${card.dataset.duration || ''} min`;
-        popularity.textContent = `City popularity: ${card.dataset.popularity || ''}`;
-
-        overlay.classList.add('open');
-        overlay.setAttribute('aria-hidden', 'false');
+        document.getElementById('quickViewTitle').textContent = card.dataset.title||'';
+        document.getElementById('quickViewDescription').textContent = card.dataset.description||'No description.';
+        document.getElementById('quickViewLocation').textContent = `${city}, ${card.dataset.country||''} · ${card.dataset.region||''}`;
+        document.getElementById('quickViewCategory').textContent = card.dataset.category||'';
+        document.getElementById('quickViewCost').textContent = `Cost: ${card.dataset.cost||''}`;
+        document.getElementById('quickViewDuration').textContent = `Duration: ${card.dataset.duration||''} min`;
+        document.getElementById('quickViewPopularity').textContent = `City popularity: ${card.dataset.popularity||''}`;
+        qvO.classList.add('open');
       });
     });
 
-    closeBtn.addEventListener('click', closeOverlay);
-    overlay.addEventListener('click', (event) => {
-      if (event.target === overlay) closeOverlay();
-    });
-    document.addEventListener('keydown', (event) => {
-      if (event.key === 'Escape') closeOverlay();
-    });
+    qvC.addEventListener('click', closeQV);
+    qvO.addEventListener('click', e => { if(e.target===qvO) closeQV(); });
+    document.addEventListener('keydown', e => { if(e.key==='Escape'){closeQV();closeSS();} });
   });
 </script>
 {% endblock %}
