@@ -8,7 +8,7 @@ from django.utils import timezone
 
 from destinations.models import Activity, City
 
-from .forms import StopForm, TripForm
+from .forms import StopForm, TripForm, StopEditForm
 from .models import Stop, StopActivity, Trip
 
 
@@ -134,6 +134,28 @@ def stop_delete_view(request, trip_id, stop_id):
                 s.save(update_fields=['order'])
         messages.success(request, 'Stop removed from itinerary.')
     return redirect('trip_itinerary', trip_id=trip.id)
+
+
+@login_required
+def stop_edit_view(request, trip_id, stop_id):
+    """Edit a stop's arrival and departure dates."""
+    trip = get_object_or_404(Trip, id=trip_id, user=request.user)
+    stop = get_object_or_404(Stop, id=stop_id, trip=trip)
+
+    if request.method == 'POST':
+        form = StopEditForm(request.POST, instance=stop)
+        if form.is_valid():
+            form.save()
+            messages.success(request, f'Dates updated for {stop.city.name}!')
+            return redirect('trip_itinerary', trip_id=trip.id)
+    else:
+        form = StopEditForm(instance=stop)
+
+    return render(request, 'trips/stop_edit.html', {
+        'trip': trip,
+        'stop': stop,
+        'form': form,
+    })
 
 
 @login_required

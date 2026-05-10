@@ -112,3 +112,28 @@ class StopForm(forms.Form):
             city.popularity_score += 1
             city.save(update_fields=['popularity_score'])
         return city
+
+
+class StopEditForm(forms.ModelForm):
+    """Form for editing a stop's dates."""
+    class Meta:
+        model = Stop
+        fields = ['arrival_date', 'departure_date']
+        widgets = {
+            'arrival_date': forms.DateInput(attrs={
+                'class': 'form-control',
+                'type': 'date',
+            }),
+            'departure_date': forms.DateInput(attrs={
+                'class': 'form-control',
+                'type': 'date',
+            }),
+        }
+
+    def clean(self):
+        cleaned = super().clean()
+        arrival = cleaned.get('arrival_date')
+        departure = cleaned.get('departure_date')
+        if arrival and departure and departure < arrival:
+            raise forms.ValidationError('Departure date must be after arrival date.')
+        return cleaned

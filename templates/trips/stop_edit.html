@@ -1,0 +1,66 @@
+{% extends 'base.html' %}
+{% block title %}Edit Stop — {{ trip.name }} — Traveloop{% endblock %}
+
+{% block content %}
+<div class="page-container">
+
+  <div class="page-header">
+    <h1>Edit Stop</h1>
+    <p class="page-subtitle">{{ trip.name }}</p>
+  </div>
+
+  <div style="max-width:600px;margin:2rem auto;">
+    <div style="background:var(--bg-card);border:var(--border-light);border-radius:var(--radius);padding:2rem;box-shadow:var(--shadow-sketch);">
+      
+      <h2 style="margin-bottom:0.5rem;">{{ stop.city.name }}, {{ stop.city.country }}</h2>
+      <p style="color:var(--text-secondary);margin-bottom:2rem;">Update the arrival and departure dates for this stop.</p>
+
+      <form method="post" id="stopEditForm">
+        {% csrf_token %}
+
+        {% if form.non_field_errors %}
+        <div style="background:rgba(231,76,60,0.06);border:1px solid rgba(231,76,60,0.2);border-radius:var(--radius);padding:1rem;margin-bottom:1.5rem;color:var(--danger);">
+          <strong>There were errors:</strong>
+          <ul style="margin:0.5rem 0 0 0;padding-left:1.2rem;">
+            {% for error in form.non_field_errors %}
+            <li>{{ error }}</li>
+            {% endfor %}
+          </ul>
+        </div>
+        {% endif %}
+
+        <div style="margin-bottom:1.5rem;">
+          <label for="id_arrival_date" style="display:block;margin-bottom:0.5rem;font-weight:500;">Arrival Date</label>
+          {{ form.arrival_date }}
+          {% if form.arrival_date.errors %}
+          <div style="color:var(--danger);font-size:0.85rem;margin-top:0.3rem;">
+            {% for error in form.arrival_date.errors %}{{ error }}{% endfor %}
+          </div>
+          {% endif %}
+        </div>
+
+        <div style="margin-bottom:2rem;">
+          <label for="id_departure_date" style="display:block;margin-bottom:0.5rem;font-weight:500;">Departure Date</label>
+          {{ form.departure_date }}
+          {% if form.departure_date.errors %}
+          <div style="color:var(--danger);font-size:0.85rem;margin-top:0.3rem;">
+            {% for error in form.departure_date.errors %}{{ error }}{% endfor %}
+          </div>
+          {% endif %}
+        </div>
+
+        <div style="display:flex;gap:1rem;flex-wrap:wrap;">
+          <button type="submit" class="btn btn-primary">
+            Save Changes
+          </button>
+          <a href="{% url 'trip_itinerary' trip_id=trip.id %}" class="btn btn-outline">
+            Cancel
+          </a>
+        </div>
+      </form>
+
+    </div>
+  </div>
+
+</div>
+{% endblock %}

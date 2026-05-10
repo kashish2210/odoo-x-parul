@@ -11,5 +11,6 @@ urlpatterns = [
     path('<int:trip_id>/delete/', views.trip_delete_view, name='trip_delete'),
     path('<int:trip_id>/itinerary/', views.trip_itinerary_view, name='trip_itinerary'),
     path('<int:trip_id>/copy/', views.trip_copy_view, name='trip_copy'),
+    path('<int:trip_id>/stops/<int:stop_id>/edit/', views.stop_edit_view, name='stop_edit'),
     path('<int:trip_id>/stops/<int:stop_id>/delete/', views.stop_delete_view, name='stop_delete'),
 ]
