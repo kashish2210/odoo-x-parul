@@ -3,6 +3,7 @@
 Traveloop is an interactive, modern web application designed to help users plan trips, discover local activities, and organize their travel notes effortlessly. Built with **Django**, Traveloop provides a premium, responsive experience utilizing glassmorphism design aesthetics, interactive destination slideshows, and smooth micro-animations.
 
 **Live Demo:** [https://odoo-x-parul.onrender.com](https://odoo-x-parul.onrender.com)
+**video Demo** [https://youtu.be/MvFeBggaoqo?si=gZ6j6goTl8PJPZs_](video link)
 
 ---
 
