@@ -1,0 +1,368 @@
+/* ========== BILLING / INVOICE STYLES ========== */
+
+/* ---------- INVOICE LAYOUT ---------- */
+.invoice-layout {
+  display: grid;
+  grid-template-columns: 1fr 300px;
+  gap: 1.5rem;
+  align-items: start;
+}
+
+/* ---------- INVOICE MAIN ---------- */
+.invoice-main {
+  background: var(--bg-card);
+  border: var(--border-sketch);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow-sketch);
+  padding: 1.5rem;
+}
+
+/* ---------- TRIP HEADER ---------- */
+.invoice-trip-header {
+  display: grid;
+  grid-template-columns: auto 1fr auto auto;
+  gap: 1.25rem;
+  padding-bottom: 1.25rem;
+  border-bottom: var(--border-sketch);
+  margin-bottom: 1.25rem;
+  align-items: start;
+}
+
+.trip-icon-box {
+  width: 80px;
+  height: 80px;
+  border: var(--border-sketch);
+  border-radius: var(--radius);
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--bg-secondary);
+  color: var(--text-muted);
+}
+.trip-icon-box img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.trip-info-block h2 {
+  font-family: 'Caveat', cursive;
+  font-size: 1.6rem;
+  font-weight: 700;
+  margin-bottom: 0.25rem;
+}
+.trip-info-block p {
+  font-size: 0.85rem;
+  color: var(--text-secondary);
+}
+.trip-info-small {
+  font-size: 0.78rem !important;
+  color: var(--text-muted) !important;
+  font-style: italic;
+}
+
+.invoice-meta-block {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.meta-pair {
+  display: flex;
+  flex-direction: column;
+}
+.meta-label {
+  font-size: 0.75rem;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+}
+.meta-value {
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: var(--text-primary);
+}
+
+.status-pending {
+  color: #f39c12;
+}
+.status-paid {
+  color: #4caf50;
+}
+
+/* ---------- EXPENSE TABLE ---------- */
+.invoice-table-wrap {
+  overflow-x: auto;
+  margin-bottom: 0.5rem;
+}
+
+.invoice-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.88rem;
+}
+
+.invoice-table th {
+  background: var(--bg-secondary);
+  font-family: 'Caveat', cursive;
+  font-weight: 700;
+  font-size: 1rem;
+  text-align: left;
+  padding: 0.75rem 0.8rem;
+  border: var(--border-sketch);
+  color: var(--text-primary);
+}
+
+.invoice-table td {
+  padding: 0.65rem 0.8rem;
+  border: 1px solid var(--border-color);
+  color: var(--text-secondary);
+  vertical-align: middle;
+}
+
+.invoice-table tbody tr:hover {
+  background: var(--bg-secondary);
+}
+
+.empty-row {
+  text-align: center;
+  color: var(--text-muted);
+  font-style: italic;
+  padding: 2rem !important;
+}
+
+.table-delete-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  background: none;
+  border: none;
+  cursor: pointer;
+  color: var(--text-muted);
+  padding: 0.25rem;
+  border-radius: 4px;
+  transition: color 0.2s, background 0.2s;
+}
+.table-delete-btn:hover {
+  color: var(--danger);
+  background: rgba(231, 76, 60, 0.1);
+}
+
+/* ---------- TOTALS ---------- */
+.invoice-totals {
+  border-top: var(--border-sketch);
+  padding-top: 1rem;
+  max-width: 400px;
+  margin-left: auto;
+}
+
+.totals-row {
+  display: flex;
+  justify-content: space-between;
+  padding: 0.5rem 0;
+  font-size: 0.9rem;
+  color: var(--text-secondary);
+  border-bottom: var(--border-light);
+}
+
+.totals-grand {
+  font-weight: 700;
+  font-size: 1.1rem;
+  color: var(--text-primary);
+  border-bottom: var(--border-sketch);
+  padding: 0.75rem 0;
+}
+
+/* ---------- INVOICE ACTIONS ---------- */
+.invoice-actions {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  flex-wrap: wrap;
+  margin-top: 1.5rem;
+  padding-top: 1rem;
+  border-top: var(--border-light);
+}
+
+/* ---------- BUDGET INSIGHTS SIDEBAR ---------- */
+.budget-insights {
+  background: var(--bg-card);
+  border: var(--border-sketch);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow-sketch);
+  padding: 1.25rem;
+  position: sticky;
+  top: 5rem;
+}
+
+.budget-insights h3 {
+  font-family: 'Caveat', cursive;
+  font-size: 1.4rem;
+  font-weight: 700;
+  margin-bottom: 1rem;
+}
+
+/* Donut chart */
+.donut-wrap {
+  display: flex;
+  justify-content: center;
+  margin-bottom: 1rem;
+}
+.donut-chart {
+  width: 120px;
+  height: 120px;
+}
+
+.insight-rows {
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+}
+
+.insight-row {
+  display: flex;
+  justify-content: space-between;
+  font-size: 0.85rem;
+  color: var(--text-secondary);
+  padding: 0.3rem 0;
+}
+.insight-row span:last-child {
+  font-weight: 600;
+  color: var(--text-primary);
+}
+
+.insight-negative span:last-child {
+  color: var(--danger);
+}
+
+.invoice-settings {
+  margin-top: 1.25rem;
+  padding-top: 1rem;
+  border-top: var(--border-light);
+}
+.invoice-settings h4 {
+  font-family: 'Caveat', cursive;
+  font-size: 1.1rem;
+  margin-bottom: 0.75rem;
+}
+
+/* ---------- BILLING LIST ---------- */
+.billing-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.billing-card {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  padding: 1rem 1.25rem;
+  background: var(--bg-card);
+  border: var(--border-sketch);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow-sketch);
+  transition: transform 0.2s, box-shadow 0.2s;
+}
+.billing-card:hover {
+  transform: translate(-2px, -2px);
+  box-shadow: var(--shadow-hover);
+}
+
+.billing-card__icon {
+  width: 48px;
+  height: 48px;
+  border-radius: var(--radius);
+  border: var(--border-light);
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--bg-secondary);
+  color: var(--text-muted);
+  flex-shrink: 0;
+}
+.billing-card__icon img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.billing-card__info {
+  flex: 1;
+  min-width: 0;
+}
+.billing-card__info h3 {
+  font-family: 'Caveat', cursive;
+  font-size: 1.2rem;
+  font-weight: 700;
+}
+.billing-card__info p {
+  font-size: 0.8rem;
+  color: var(--text-muted);
+}
+
+.billing-card__spent {
+  text-align: right;
+}
+.spent-label {
+  display: block;
+  font-size: 0.7rem;
+  color: var(--text-muted);
+  text-transform: uppercase;
+}
+.spent-value {
+  font-size: 1rem;
+  font-weight: 700;
+  color: var(--text-primary);
+}
+
+.billing-card__status {
+  min-width: 90px;
+  text-align: center;
+}
+
+.status-badge {
+  display: inline-block;
+  padding: 0.25rem 0.75rem;
+  border-radius: 99px;
+  font-size: 0.78rem;
+  font-weight: 600;
+}
+.status-badge--pending {
+  background: rgba(243, 156, 18, 0.15);
+  color: #f39c12;
+  border: 1px solid #f39c12;
+}
+.status-badge--paid {
+  background: rgba(76, 175, 80, 0.15);
+  color: #4caf50;
+  border: 1px solid #4caf50;
+}
+.status-badge--none {
+  background: var(--bg-secondary);
+  color: var(--text-muted);
+  border: var(--border-light);
+}
+
+/* ---------- PRINT STYLES ---------- */
+@media print {
+  .nav-header, .site-footer, .back-link, .invoice-actions,
+  .invoice-settings, .table-delete-btn, .btn { display: none !important; }
+  .invoice-layout { grid-template-columns: 1fr 280px; }
+  .invoice-main, .budget-insights { box-shadow: none; border-color: #ccc; }
+}
+
+/* ---------- RESPONSIVE ---------- */
+@media (max-width: 768px) {
+  .invoice-layout {
+    grid-template-columns: 1fr;
+  }
+  .invoice-trip-header {
+    grid-template-columns: 1fr;
+  }
+  .billing-card {
+    flex-wrap: wrap;
+  }
+}

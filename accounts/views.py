@@ -111,3 +111,118 @@ def profile_view(request):
         'previous_trips': [],    # Will be populated when trips feature is built
     })
 
+
+from django.contrib.admin.views.decorators import staff_member_required
+from django.db.models import Count, Sum, Q, F
+from django.db.models.functions import TruncMonth
+import json
+
+
+@staff_member_required
+def admin_panel_view(request):
+    """Custom admin panel — Screen 12 from wireframe."""
+    from trips.models import Trip, Stop
+    from destinations.models import City, Activity
+    from community.models import CommunityPost
+    from budget.models import TripBudget
+
+    tab = request.GET.get('tab', 'users')
+    query = request.GET.get('q', '')
+
+    context = {'tab': tab, 'query': query}
+
+    # ── TAB 1: Manage Users ──
+    if tab == 'users':
+        users = User.objects.annotate(
+            trip_count=Count('trips'),
+            post_count=Count('community_posts'),
+        ).order_by('-date_joined')
+        if query:
+            users = users.filter(
+                Q(username__icontains=query) |
+                Q(email__icontains=query) |
+                Q(first_name__icontains=query)
+            )
+        context['users'] = users
+        context['total_users'] = User.objects.count()
+        context['active_users'] = User.objects.filter(trips__isnull=False).distinct().count()
+
+    # ── TAB 2: Popular Cities ──
+    elif tab == 'cities':
+        cities = City.objects.annotate(
+            visit_count=Count('trip_stops'),
+        ).order_by('-visit_count')[:20]
+        if query:
+            cities = City.objects.annotate(
+                visit_count=Count('trip_stops'),
+            ).filter(
+                Q(name__icontains=query) | Q(country__icontains=query)
+            ).order_by('-visit_count')[:20]
+        context['cities'] = cities
+        context['total_cities'] = City.objects.count()
+
+    # ── TAB 3: Popular Activities ──
+    elif tab == 'activities':
+        activities = Activity.objects.annotate(
+            booking_count=Count('scheduled_stops'),
+        ).order_by('-booking_count')[:20]
+        if query:
+            activities = Activity.objects.annotate(
+                booking_count=Count('scheduled_stops'),
+            ).filter(
+                Q(name__icontains=query) | Q(city__name__icontains=query)
+            ).order_by('-booking_count')[:20]
+        context['activities'] = activities
+        context['total_activities'] = Activity.objects.count()
+
+    # ── TAB 4: User Trends & Analytics ──
+    elif tab == 'analytics':
+        # Summary stats
+        context['total_users'] = User.objects.count()
+        context['total_trips'] = Trip.objects.count()
+        context['total_stops'] = Stop.objects.count()
+        context['total_posts'] = CommunityPost.objects.count()
+        context['total_cities'] = City.objects.count()
+
+        # Total budget across all trips
+        budget_agg = TripBudget.objects.aggregate(
+            total=Sum('total_budget'),
+        )
+        context['total_budget_all'] = budget_agg['total'] or 0
+
+        # Trips per month (last 6 months) for line chart
+        from django.utils import timezone
+        import datetime
+        six_months_ago = timezone.now().date() - datetime.timedelta(days=180)
+        trips_per_month = (
+            Trip.objects.filter(start_date__gte=six_months_ago)
+            .annotate(month=TruncMonth('start_date'))
+            .values('month')
+            .annotate(count=Count('id'))
+            .order_by('month')
+        )
+        context['trips_chart_labels'] = json.dumps([
+            t['month'].strftime('%b %Y') for t in trips_per_month
+        ])
+        context['trips_chart_data'] = json.dumps([
+            t['count'] for t in trips_per_month
+        ])
+
+        # Category distribution for pie chart
+        category_data = (
+            CommunityPost.objects.values('category')
+            .annotate(count=Count('id'))
+            .order_by('-count')
+        )
+        context['cat_labels'] = json.dumps([c['category'].title() for c in category_data])
+        context['cat_data'] = json.dumps([c['count'] for c in category_data])
+
+        # Top 5 cities for bar chart
+        top_cities = City.objects.annotate(
+            visits=Count('trip_stops')
+        ).order_by('-visits')[:5]
+        context['city_bar_labels'] = json.dumps([c.name for c in top_cities])
+        context['city_bar_data'] = json.dumps([c.visits for c in top_cities])
+
+    return render(request, 'accounts/admin_panel.html', context)
+

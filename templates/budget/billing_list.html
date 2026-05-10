@@ -1,0 +1,64 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block title %}Billing — Traveloop{% endblock %}
+{% block extra_css %}<link rel="stylesheet" href="{% static 'css/billing.css' %}">{% endblock %}
+
+{% block content %}
+<div class="page-container">
+
+  <div class="community-header-row">
+    <h1 class="community-page-title">Billing & Invoices</h1>
+  </div>
+
+  <!-- Search -->
+  <div class="community-toolbar" role="search">
+    <div class="community-search-wrap">
+      <span class="community-search-icon" aria-hidden="true">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+      </span>
+      <form method="get">
+        <input type="text" name="q" class="community-search-input" placeholder="Search invoices......" value="{{ query }}" autocomplete="off">
+      </form>
+    </div>
+  </div>
+
+  <!-- Trip List -->
+  <div class="billing-list">
+    {% for item in trip_data %}
+    <div class="billing-card">
+      <div class="billing-card__icon">
+        {% if item.trip.cover_photo %}
+        <img src="{{ item.trip.cover_photo.url }}" alt="{{ item.trip.name }}">
+        {% else %}
+        <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
+        {% endif %}
+      </div>
+      <div class="billing-card__info">
+        <h3>{{ item.trip.name }}</h3>
+        <p>{{ item.trip.start_date|date:"M d" }} – {{ item.trip.end_date|date:"M d, Y" }}</p>
+      </div>
+      <div class="billing-card__spent">
+        <span class="spent-label">Spent</span>
+        <span class="spent-value">{% if item.budget %}{{ item.budget.currency }}{% endif %} {{ item.total_spent }}</span>
+      </div>
+      <div class="billing-card__status">
+        <span class="status-badge status-badge--{{ item.invoice.status|default:'none' }}">{{ item.status }}</span>
+      </div>
+      <div class="billing-card__action">
+        <a href="{% url 'budget:invoice' trip_id=item.trip.id %}" class="btn btn-outline btn-sm">View Invoice</a>
+      </div>
+    </div>
+    {% empty %}
+    <div class="community-empty">
+      <div class="community-empty__icon">
+        <svg width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>
+      </div>
+      <p class="community-empty__title">No trips yet</p>
+      <p class="community-empty__sub">Create a trip first to generate invoices.</p>
+      <a href="{% url 'trip_create' %}" class="btn btn-primary">Create Trip</a>
+    </div>
+    {% endfor %}
+  </div>
+
+</div>
+{% endblock %}

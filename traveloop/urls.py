@@ -17,8 +17,8 @@ urlpatterns = [
     path('checklists/', include('checklists.urls', namespace='checklists')),
     path('destinations/', include('destinations.urls')),
     path('community/', include('community.urls', namespace='community')),
+    path('billing/', include('budget.urls', namespace='budget')),
 ]
 
 if settings.DEBUG:
     urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
-
