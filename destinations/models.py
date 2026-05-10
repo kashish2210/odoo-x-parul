@@ -38,6 +38,7 @@ class Activity(models.Model):
     city = models.ForeignKey(City, on_delete=models.CASCADE, related_name='activities')
     name = models.CharField(max_length=150)
     description = models.TextField(blank=True)
+    image = models.ImageField(upload_to='activities/', blank=True, null=True)
     category = models.CharField(max_length=20, choices=CATEGORY_CHOICES, default=CATEGORY_OTHER)
     estimated_cost = models.DecimalField(max_digits=10, decimal_places=2, default=0)
     duration_minutes = models.IntegerField(default=60)
