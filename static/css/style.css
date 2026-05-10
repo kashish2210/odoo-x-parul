@@ -28,27 +28,37 @@
   --warning: #f39c12;
   --overlay: rgba(0,0,0,0.4);
   --radius: 6px;
+  
+  /* Planning grid pattern (Light Mode) */
+  --bg-pattern: linear-gradient(rgba(0, 0, 0, 0.04) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(0, 0, 0, 0.04) 1px, transparent 1px);
+  --bg-pattern-size: 30px 30px;
 }
 
 [data-theme="dark"] {
-  --bg-primary: #1a1a2e;
-  --bg-secondary: #16213e;
-  --bg-card: #222244;
-  --bg-input: #2a2a4a;
-  --text-primary: #e8e8e8;
-  --text-secondary: #b0b0c0;
-  --text-muted: #7a7a90;
-  --border-color: #e8e8e8;
-  --border-sketch: 2px solid #e8e8e8;
-  --border-light: 1px solid #3a3a5e;
+  --bg-primary: #121212;
+  --bg-secondary: #1a1a1a;
+  --bg-card: #1f1f1f;
+  --bg-input: #262626;
+  --text-primary: #f0f0f0;
+  --text-secondary: #b0b0b0;
+  --text-muted: #737373;
+  --border-color: #f0f0f0;
+  --border-sketch: 2px solid #f0f0f0;
+  --border-light: 1px solid #333333;
   --accent: #ff8c5a;
   --accent-hover: #ff7040;
-  --accent-light: #2e2240;
-  --shadow-sketch: 3px 3px 0px rgba(232,232,232,0.3);
-  --shadow-hover: 5px 5px 0px rgba(232,232,232,0.3);
-  --shadow-soft: 0 2px 12px rgba(0,0,0,0.3);
-  --toggle-bg: #3a3a5e;
-  --overlay: rgba(0,0,0,0.6);
+  --accent-light: #332219;
+  --shadow-sketch: 3px 3px 0px rgba(240,240,240,0.3);
+  --shadow-hover: 5px 5px 0px rgba(240,240,240,0.3);
+  --shadow-soft: 0 2px 12px rgba(0,0,0,0.5);
+  --toggle-bg: #333333;
+  --overlay: rgba(0,0,0,0.7);
+  
+  /* Planning grid pattern */
+  --bg-pattern: linear-gradient(rgba(255, 255, 255, 0.05) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(255, 255, 255, 0.05) 1px, transparent 1px);
+  --bg-pattern-size: 30px 30px;
 }
 
 /* ---------- RESET & BASE ---------- */
@@ -58,11 +68,13 @@ html { scroll-behavior: smooth; }
 
 body {
   font-family: 'Inter', sans-serif;
-  background: var(--bg-primary);
+  background-color: var(--bg-primary);
+  background-image: var(--bg-pattern, none);
+  background-size: var(--bg-pattern-size, auto);
   color: var(--text-primary);
   line-height: 1.6;
   min-height: 100vh;
-  transition: background 0.3s ease, color 0.3s ease;
+  transition: background-color 0.3s ease, color 0.3s ease;
 }
 
 a { color: var(--accent); text-decoration: none; transition: color 0.2s; }
