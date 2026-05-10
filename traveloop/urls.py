@@ -15,6 +15,7 @@ urlpatterns = [
     path('', include('accounts.urls')),
     path('notes/', include('notes.urls', namespace='notes')),
     path('destinations/', include('destinations.urls')),
+    path('community/', include('community.urls', namespace='community')),
 ]
 
 if settings.DEBUG:
