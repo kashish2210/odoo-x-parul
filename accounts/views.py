@@ -50,7 +50,7 @@ def signup_view(request):
                 photo=form.cleaned_data.get('photo'),
             )
             login(request, user)
-            messages.success(request, 'Account created! Welcome to Traveloop! ✈️')
+            messages.success(request, 'Account created! Welcome to Traveloop!')
             return redirect('dashboard')
     else:
         form = SignupForm()

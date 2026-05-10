@@ -6,7 +6,7 @@
 
   <!-- Welcome -->
   <div class="dash-welcome">
-    <h1>Hey, {{ user.first_name|default:user.username }}! ✨</h1>
+    <h1>Hey, {{ user.first_name|default:user.username }}! <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:bottom;color:var(--accent)"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon></svg></h1>
     <p>Ready to plan your next adventure?</p>
   </div>
 
@@ -21,7 +21,7 @@
   <!-- Search & Filters -->
   <div class="dash-controls">
     <div class="dash-search">
-      <span class="search-icon">🔍</span>
+      <span class="search-icon"><svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg></span>
       <input type="text" placeholder="Search destinations, trips..." id="dashSearch">
     </div>
     <button class="btn btn-outline filter-btn">Group by</button>
@@ -36,35 +36,35 @@
   </div>
   <div class="card-grid">
     <div class="trip-card">
-      <div class="card-img">🏔️</div>
+      <div class="card-img"><svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M8 3l4 8 5-5 5 15H2L8 3z"></path></svg></div>
       <div class="card-body">
         <h4>Himalayas</h4>
         <p>India · Mountain treks</p>
       </div>
     </div>
     <div class="trip-card">
-      <div class="card-img">🏖️</div>
+      <div class="card-img"><svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M22 20a2 2 0 1 1-4 0c0-1.6 1.7-2.4 2-4 .3 1.6 2 2.4 2 4z"></path><path d="M2 15h10"></path><path d="M9 11v4"></path><path d="M5 15v4"></path><path d="M12 15a6 6 0 0 1 6-6V5h-3v4a6 6 0 0 1-6 6"></path></svg></div>
       <div class="card-body">
         <h4>Bali</h4>
         <p>Indonesia · Beach paradise</p>
       </div>
     </div>
     <div class="trip-card">
-      <div class="card-img">🗼</div>
+      <div class="card-img"><svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2v20"></path><path d="M8 22h8"></path><path d="M10 14h4"></path><path d="M11 6h2"></path><path d="M6 18l3-12"></path><path d="M18 18l-3-12"></path></svg></div>
       <div class="card-body">
         <h4>Paris</h4>
         <p>France · City of lights</p>
       </div>
     </div>
     <div class="trip-card">
-      <div class="card-img">🌸</div>
+      <div class="card-img"><svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2c1 3 2.5 3.5 3.5 4.5A5 5 0 0 1 17 12c0 2-2 3-5 5-3-2-5-3-5-5a5 5 0 0 1 1.5-5.5C9.5 5.5 11 5 12 2z"></path></svg></div>
       <div class="card-body">
         <h4>Tokyo</h4>
         <p>Japan · Culture & tech</p>
       </div>
     </div>
     <div class="trip-card">
-      <div class="card-img">🏜️</div>
+      <div class="card-img"><svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="7" r="4"></circle><path d="M2 21h20"></path><path d="M4 21v-4a8 8 0 0 1 16 0v4"></path></svg></div>
       <div class="card-body">
         <h4>Dubai</h4>
         <p>UAE · Luxury & desert</p>
@@ -81,7 +81,7 @@
     {% if trips %}
       {% for trip in trips %}
       <div class="trip-card">
-        <div class="card-img">🗺️</div>
+        <div class="card-img"><svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><polygon points="3 6 9 3 15 6 21 3 21 18 15 21 9 18 3 21"></polygon><line x1="9" y1="3" x2="9" y2="18"></line><line x1="15" y1="6" x2="15" y2="21"></line></svg></div>
         <div class="card-body">
           <h4>{{ trip.name }}</h4>
           <p>{{ trip.start_date|date:"M d" }} — {{ trip.end_date|date:"M d, Y" }}</p>
@@ -90,7 +90,7 @@
       {% endfor %}
     {% else %}
       <div style="grid-column:1/-1;text-align:center;padding:2rem;color:var(--text-muted);">
-        <p style="font-size:2.5rem;margin-bottom:0.5rem;">🌍</p>
+        <p style="margin-bottom:0.5rem;"><svg xmlns="http://www.w3.org/2000/svg" width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1" stroke-linecap="round" stroke-linejoin="round" style="color:var(--text-muted);"><circle cx="12" cy="12" r="10"></circle><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"></path><path d="M2 12h20"></path></svg></p>
         <p>No trips yet! Click the <strong>+</strong> button to plan your first adventure.</p>
       </div>
     {% endif %}

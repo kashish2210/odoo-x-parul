@@ -350,28 +350,43 @@ textarea.form-control {
 }
 
 .auth-card {
-  background: var(--bg-card);
-  border: var(--border-sketch);
-  border-radius: 12px;
-  box-shadow: var(--shadow-sketch);
+  background: rgba(255, 255, 255, 0.25);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid rgba(255, 255, 255, 0.6);
+  border-radius: 16px;
+  box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.1);
   padding: 2.5rem;
   width: 100%;
   max-width: 440px;
   animation: fadeSlideUp 0.5s ease;
 }
 
+[data-theme="dark"] .auth-card {
+  background: rgba(20, 20, 30, 0.4);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.3);
+}
+
 .auth-card .auth-avatar {
   width: 80px;
   height: 80px;
   border-radius: 50%;
-  border: var(--border-sketch);
+  border: 1px solid rgba(255, 255, 255, 0.6);
   margin: 0 auto 1.5rem;
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 2rem;
-  background: var(--bg-secondary);
-  box-shadow: var(--shadow-sketch);
+  background: rgba(255, 255, 255, 0.3);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  box-shadow: 0 4px 16px 0 rgba(0, 0, 0, 0.1);
+}
+
+[data-theme="dark"] .auth-card .auth-avatar {
+  background: rgba(20, 20, 30, 0.5);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  box-shadow: 0 4px 16px 0 rgba(0, 0, 0, 0.3);
 }
 
 .auth-card h2 {

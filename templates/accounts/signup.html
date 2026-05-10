@@ -1,12 +1,15 @@
 {% extends 'base.html' %}
+{% load static %}
 {% block title %}Sign Up — Traveloop{% endblock %}
 
 {% block content %}
-<div class="auth-wrapper">
-  <div class="auth-card signup-card">
+<div class="auth-wrapper" style="position: relative; overflow: hidden; background: transparent;">
+  <iframe src="https://my.spline.design/stylizedlandingpage-m5H3ENvFtAwPXYr0hZzKjP9S/" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; z-index: 0; border: none; pointer-events: none;" frameborder="0"></iframe>
+  
+  <div class="auth-card signup-card" style="position: relative; z-index: 1;">
     <label for="id_photo" style="cursor:pointer;">
       <div class="auth-avatar" id="avatarPreview">
-        📷
+        <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect><circle cx="8.5" cy="8.5" r="1.5"></circle><polyline points="21 15 16 10 5 21"></polyline></svg>
         <div class="avatar-overlay">Upload</div>
       </div>
     </label>
