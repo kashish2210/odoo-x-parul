@@ -1,0 +1,27 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block title %}Admin Panel Login — Traveloop{% endblock %}
+
+{% block content %}
+<div class="auth-container" style="max-width:400px;margin:4rem auto;padding:2rem;background:var(--bg-card);border:var(--border-sketch);border-radius:var(--radius);box-shadow:var(--shadow-sketch);">
+  <div class="auth-header" style="text-align:center;margin-bottom:1.5rem;">
+    <div class="auth-logo" style="display:inline-flex;align-items:center;justify-content:center;width:60px;height:60px;background:var(--bg-secondary);border:1px solid var(--border-color);border-radius:50%;margin-bottom:1rem;">
+      <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="color:var(--text-muted);"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+    </div>
+    <h1 style="font-family:'Caveat',cursive;font-size:2rem;margin-bottom:0.5rem;">Admin Access</h1>
+    <p style="color:var(--text-secondary);font-size:0.9rem;">Please enter the admin password.</p>
+  </div>
+
+  <form method="post" novalidate>
+    {% csrf_token %}
+    <div class="form-group">
+      <label for="admin_password">Password</label>
+      <input type="password" name="admin_password" id="admin_password" class="form-control" required autofocus placeholder="Enter password">
+    </div>
+    
+    <button type="submit" class="btn btn-primary btn-block" style="margin-top:1.5rem;">
+      Unlock Admin Panel
+    </button>
+  </form>
+</div>
+{% endblock %}

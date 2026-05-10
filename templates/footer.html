@@ -7,25 +7,25 @@
     <div class="footer-col">
       <h4>Explore</h4>
       <ul>
-        <li><a href="#">Destinations</a></li>
-        <li><a href="#">Activities</a></li>
-        <li><a href="#">Trip Ideas</a></li>
+        <li><a href="{% url 'explore' %}">Destinations</a></li>
+        <li><a href="{% url 'destinations:activity-search' %}">Activities</a></li>
+        <li><a href="{% url 'community:community_list' %}">Trip Ideas</a></li>
       </ul>
     </div>
     <div class="footer-col">
       <h4>Company</h4>
       <ul>
-        <li><a href="#">About Us</a></li>
-        <li><a href="#">Contact</a></li>
-        <li><a href="#">Careers</a></li>
+        <li><a href="{% url 'about' %}">About Us</a></li>
+        <li><a href="{% url 'contact' %}">Contact</a></li>
+        <li><a href="{% url 'careers' %}">Careers</a></li>
       </ul>
     </div>
     <div class="footer-col">
       <h4>Support</h4>
       <ul>
-        <li><a href="#">Help Center</a></li>
-        <li><a href="#">Privacy Policy</a></li>
-        <li><a href="#">Terms</a></li>
+        <li><a href="{% url 'help' %}">Help Center</a></li>
+        <li><a href="{% url 'privacy' %}">Privacy Policy</a></li>
+        <li><a href="{% url 'terms' %}">Terms</a></li>
       </ul>
     </div>
   </div>

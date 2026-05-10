@@ -204,9 +204,25 @@ def trip_detail_view(request, trip_id):
     over_budget_threshold = avg_per_day * Decimal('1.5') if total_days > 0 else trip_total
     over_budget_stops = [item for item in per_stop if item['total_cost'] > over_budget_threshold]
 
+    # Build map data
+    import json
+    map_points = []
+    for stop in stops:
+        city = stop.city
+        if city.latitude and city.longitude:
+            map_points.append({
+                'name': city.name,
+                'country': city.country,
+                'lat': city.latitude,
+                'lng': city.longitude,
+                'arrival': stop.arrival_date.strftime('%b %d'),
+                'departure': stop.departure_date.strftime('%b %d'),
+            })
+
     return render(request, 'trips/trip_detail.html', {
         'trip': trip,
         'stops': stops,
+        'map_data': json.dumps(map_points),
         'budget_summary': {
             'stay_rate': stay_rate,
             'transport_rate': transport_rate,
@@ -227,6 +243,7 @@ def trip_detail_view(request, trip_id):
 def explore_view(request):
     """Explore page: public trips from everyone + your own trips."""
     from django.db.models import Q
+    import json
     query = request.GET.get('q', '')
 
     trips = Trip.objects.filter(
@@ -238,9 +255,28 @@ def explore_view(request):
             Q(name__icontains=query) | Q(description__icontains=query)
         )
 
+    # Build map data from all stops of visible trips
+    all_stops = Stop.objects.filter(
+        trip__in=trips
+    ).select_related('city', 'trip')
+    map_points = []
+    seen = set()
+    for stop in all_stops:
+        city = stop.city
+        if city.latitude and city.longitude and city.id not in seen:
+            seen.add(city.id)
+            map_points.append({
+                'name': city.name,
+                'country': city.country,
+                'lat': city.latitude,
+                'lng': city.longitude,
+                'trips': stop.trip.name,
+            })
+
     return render(request, 'trips/explore.html', {
         'trips': trips,
         'query': query,
+        'map_data': json.dumps(map_points),
     })
 
 

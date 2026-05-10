@@ -1,5 +1,42 @@
 {% extends 'base.html' %}
 {% block title %}Explore — Traveloop{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+<style>
+  .explore-map {
+    width: 100%;
+    height: 400px;
+    border: var(--border-sketch);
+    border-radius: var(--radius);
+    box-shadow: var(--shadow-sketch);
+    margin-bottom: 2rem;
+    z-index: 1;
+  }
+  /* Dark mode map tiles */
+  [data-theme="dark"] .explore-map {
+    filter: brightness(0.8) contrast(1.1) saturate(0.8);
+  }
+  .leaflet-popup-content-wrapper {
+    font-family: 'Inter', sans-serif;
+    border-radius: 8px;
+  }
+  .leaflet-popup-content {
+    margin: 10px 14px;
+  }
+  .map-popup-title {
+    font-family: 'Caveat', cursive;
+    font-size: 1.3rem;
+    font-weight: 700;
+    margin-bottom: 2px;
+  }
+  .map-popup-sub {
+    font-size: 0.8rem;
+    color: #666;
+  }
+</style>
+{% endblock %}
+
 {% block content %}
 <div class="page-container">
 
@@ -7,6 +44,9 @@
     <h1>Explore Trips</h1>
     <p class="page-subtitle">Discover trips from the community and get inspired</p>
   </div>
+
+  <!-- Interactive Map -->
+  <div id="exploreMap" class="explore-map"></div>
 
   <div class="dash-controls">
     <form class="dash-search" method="get" action="{% url 'explore' %}">
@@ -46,4 +86,50 @@
   </div>
 
 </div>
+{% endblock %}
+
+{% block extra_js %}
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<script>
+document.addEventListener('DOMContentLoaded', () => {
+  const mapData = {{ map_data|safe }};
+  const mapEl = document.getElementById('exploreMap');
+  if (!mapEl) return;
+
+  const map = L.map('exploreMap', {
+    scrollWheelZoom: false,
+  }).setView([20, 0], 2);
+
+  L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+    attribution: '&copy; OpenStreetMap contributors',
+    maxZoom: 18,
+  }).addTo(map);
+
+  // Custom marker icon
+  const markerIcon = L.divIcon({
+    className: 'custom-map-marker',
+    html: '<svg width="28" height="36" viewBox="0 0 28 36"><path d="M14 0C6.27 0 0 6.27 0 14c0 10.5 14 22 14 22s14-11.5 14-22C28 6.27 21.73 0 14 0z" fill="#e8734a" stroke="#fff" stroke-width="2"/><circle cx="14" cy="13" r="5" fill="#fff"/></svg>',
+    iconSize: [28, 36],
+    iconAnchor: [14, 36],
+    popupAnchor: [0, -34],
+  });
+
+  if (mapData.length > 0) {
+    const bounds = [];
+    mapData.forEach(point => {
+      const marker = L.marker([point.lat, point.lng], { icon: markerIcon }).addTo(map);
+      marker.bindPopup(`
+        <div class="map-popup-title">${point.name}</div>
+        <div class="map-popup-sub">${point.country}</div>
+        <div class="map-popup-sub" style="margin-top:4px;">Trip: ${point.trips}</div>
+      `);
+      bounds.push([point.lat, point.lng]);
+    });
+    map.fitBounds(bounds, { padding: [40, 40], maxZoom: 6 });
+  }
+
+  // Fix tile rendering on tab switch
+  setTimeout(() => map.invalidateSize(), 300);
+});
+</script>
 {% endblock %}
