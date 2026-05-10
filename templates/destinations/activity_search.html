@@ -1,0 +1,458 @@
+{% extends 'base.html' %}
+{% block title %}Activity Search — Traveloop{% endblock %}
+
+{% block extra_css %}
+<style>
+  .search-shell {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 1.5rem 2rem 3rem;
+  }
+
+  .search-hero {
+    background: var(--bg-card);
+    border: var(--border-sketch);
+    border-radius: 12px;
+    box-shadow: var(--shadow-sketch);
+    padding: 1.2rem 1.25rem;
+    margin-bottom: 1.4rem;
+  }
+
+  .search-hero h1 {
+    font-size: 2.2rem;
+    margin-bottom: 0.25rem;
+  }
+
+  .search-hero p {
+    color: var(--text-secondary);
+    margin-bottom: 1rem;
+  }
+
+  .search-form {
+    display: grid;
+    grid-template-columns: 2fr repeat(4, minmax(0, 1fr));
+    gap: 0.75rem;
+    align-items: end;
+  }
+
+  .search-form .full-span { grid-column: 1 / -1; }
+
+  .field-group label {
+    display: block;
+    font-size: 0.8rem;
+    color: var(--text-secondary);
+    margin-bottom: 0.35rem;
+    font-weight: 600;
+  }
+
+  .field-group input,
+  .field-group select {
+    width: 100%;
+    background: var(--bg-input);
+    color: var(--text-primary);
+    border: var(--border-sketch);
+    border-radius: var(--radius);
+    padding: 0.7rem 0.85rem;
+    font: inherit;
+    box-shadow: var(--shadow-sketch);
+    outline: none;
+  }
+
+  .field-group input::placeholder { color: var(--text-muted); }
+
+  .results-meta {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.8rem;
+    margin-bottom: 1rem;
+    flex-wrap: wrap;
+  }
+
+  .results-count {
+    color: var(--text-secondary);
+    font-size: 0.95rem;
+  }
+
+  .activity-card .card-img {
+    position: relative;
+    overflow: hidden;
+  }
+
+  .activity-card .card-img img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+
+  .activity-card .card-body {
+    display: grid;
+    gap: 0.6rem;
+  }
+
+  .activity-topline {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.5rem;
+  }
+
+  .result-pill {
+    display: inline-flex;
+    align-items: center;
+    padding: 0.28rem 0.55rem;
+    border-radius: 999px;
+    background: var(--accent-light);
+    color: var(--accent-hover);
+    font-size: 0.74rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+  }
+
+  .result-details {
+    color: var(--text-secondary);
+    font-size: 0.88rem;
+    min-height: 2.4rem;
+  }
+
+  .result-meta {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.45rem;
+    font-size: 0.78rem;
+    color: var(--text-secondary);
+  }
+
+  .meta-chip {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.3rem;
+    padding: 0.3rem 0.55rem;
+    border: var(--border-light);
+    border-radius: 999px;
+    background: var(--bg-secondary);
+  }
+
+  .result-actions {
+    display: flex;
+    gap: 0.5rem;
+    flex-wrap: wrap;
+    align-items: center;
+  }
+
+  .result-actions form {
+    margin: 0;
+  }
+
+  .empty-state {
+    grid-column: 1 / -1;
+    background: var(--bg-card);
+    border: var(--border-sketch);
+    border-radius: 12px;
+    box-shadow: var(--shadow-sketch);
+    padding: 2rem;
+    text-align: center;
+    color: var(--text-secondary);
+  }
+
+  .quick-view-overlay {
+    position: fixed;
+    inset: 0;
+    background: var(--overlay);
+    display: none;
+    align-items: center;
+    justify-content: center;
+    padding: 1rem;
+    z-index: 1200;
+  }
+
+  .quick-view-overlay.open { display: flex; }
+
+  .quick-view-panel {
+    width: min(760px, 100%);
+    background: var(--bg-card);
+    color: var(--text-primary);
+    border: var(--border-sketch);
+    border-radius: 14px;
+    box-shadow: var(--shadow-hover);
+    overflow: hidden;
+  }
+
+  .quick-view-media {
+    height: 220px;
+    background: var(--bg-secondary);
+    border-bottom: var(--border-sketch);
+  }
+
+  .quick-view-media img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+
+  .quick-view-body {
+    padding: 1.2rem;
+  }
+
+  .quick-view-top {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 1rem;
+    margin-bottom: 0.8rem;
+  }
+
+  .quick-view-body h3 {
+    font-size: 2rem;
+    margin-bottom: 0.2rem;
+  }
+
+  .quick-view-close {
+    background: transparent;
+    border: none;
+    color: var(--text-secondary);
+    font-size: 1.8rem;
+    cursor: pointer;
+    line-height: 1;
+  }
+
+  .quick-view-stats {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+    margin-top: 1rem;
+  }
+
+  @media (max-width: 900px) {
+    .search-form { grid-template-columns: 1fr 1fr; }
+  }
+
+  @media (max-width: 640px) {
+    .search-shell { padding: 1rem; }
+    .search-form { grid-template-columns: 1fr; }
+    .search-hero h1 { font-size: 1.9rem; }
+  }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="search-shell">
+  <section class="search-hero">
+    <h1>Browse activities</h1>
+    <p>
+      {% if selected_stop %}
+        Filling <strong>{{ selected_stop.city.name }}</strong> in {{ selected_trip.name }}.
+      {% else %}
+        Search by interest, cost, or duration and then attach activities to a stop.
+      {% endif %}
+    </p>
+
+    <form method="get" class="search-form">
+      <input type="hidden" name="stop" value="{{ selected_stop.id|default_if_none:'' }}">
+      <div class="field-group full-span">
+        <label for="q">Search</label>
+        <input id="q" name="q" type="text" placeholder="Paragliding, food tour, museum..." value="{{ filters.q }}">
+      </div>
+      <div class="field-group">
+        <label for="category">Type</label>
+        <select id="category" name="category">
+          <option value="">All types</option>
+          {% for value, label in category_choices %}
+          <option value="{{ value }}" {% if filters.category == value %}selected{% endif %}>{{ label }}</option>
+          {% endfor %}
+        </select>
+      </div>
+      <div class="field-group">
+        <label for="min_cost">Min cost</label>
+        <input id="min_cost" name="min_cost" type="number" min="0" step="0.01" value="{{ filters.min_cost }}">
+      </div>
+      <div class="field-group">
+        <label for="max_cost">Max cost</label>
+        <input id="max_cost" name="max_cost" type="number" min="0" step="0.01" value="{{ filters.max_cost }}">
+      </div>
+      <div class="field-group">
+        <label for="min_duration">Min mins</label>
+        <input id="min_duration" name="min_duration" type="number" min="0" step="5" value="{{ filters.min_duration }}">
+      </div>
+      <div class="field-group">
+        <label for="max_duration">Max mins</label>
+        <input id="max_duration" name="max_duration" type="number" min="0" step="5" value="{{ filters.max_duration }}">
+      </div>
+      <div class="field-group">
+        <label for="country">Country</label>
+        <input id="country" name="country" type="text" value="{{ filters.country }}">
+      </div>
+      <div class="field-group">
+        <label for="region">Region</label>
+        <input id="region" name="region" type="text" value="{{ filters.region }}">
+      </div>
+      <div class="field-group">
+        <label for="sort">Sort by</label>
+        <select id="sort" name="sort">
+          {% for value, label in sort_options %}
+          <option value="{{ value }}" {% if filters.sort == value %}selected{% endif %}>{{ label }}</option>
+          {% endfor %}
+        </select>
+      </div>
+      <div class="field-group">
+        <label>&nbsp;</label>
+        <button type="submit" class="btn btn-primary" style="width:100%;">Search</button>
+      </div>
+    </form>
+  </section>
+
+  <div class="results-meta">
+    <div class="section-header" style="margin:0;">
+      <h2>Results</h2>
+      <div class="line"></div>
+    </div>
+    <div class="results-count">{{ activities|length }} result{{ activities|length|pluralize }}</div>
+  </div>
+
+  <div class="card-grid">
+    {% for activity in activities %}
+    <article class="trip-card activity-card"
+             data-title="{{ activity.name|escapejs }}"
+             data-description="{{ activity.description|default_if_none:''|escapejs }}"
+             data-city="{{ activity.city.name|escapejs }}"
+             data-country="{{ activity.city.country|escapejs }}"
+             data-region="{{ activity.city.region|escapejs }}"
+             data-category="{{ activity.get_category_display|escapejs }}"
+             data-cost="{{ activity.estimated_cost }}"
+             data-duration="{{ activity.duration_minutes }}"
+             data-popularity="{{ activity.city.popularity_score }}"
+             data-image-url="{% if activity.image %}{{ activity.image.url }}{% endif %}">
+      <div class="card-img">
+        {% if activity.image %}
+          <img src="{{ activity.image.url }}" alt="{{ activity.name }}">
+        {% else %}
+          <span style="font-size:3rem;">{{ activity.city.name|slice:":1"|upper }}</span>
+        {% endif %}
+      </div>
+      <div class="card-body">
+        <div class="activity-topline">
+          <span class="result-pill">{{ activity.get_category_display }}</span>
+          <span style="font-size:0.8rem;color:var(--text-secondary);">{{ activity.city.name }}</span>
+        </div>
+        <h4>{{ activity.name }}</h4>
+        <p>{{ activity.city.country }} · {{ activity.city.region }}</p>
+        <div class="result-details">{{ activity.description|default:'No description added yet.'|truncatechars:110 }}</div>
+        <div class="result-meta">
+          <span class="meta-chip">Cost: {{ activity.estimated_cost }}</span>
+          <span class="meta-chip">Duration: {{ activity.duration_minutes }} min</span>
+          <span class="meta-chip">Popularity: {{ activity.city.popularity_score }}</span>
+        </div>
+        <div class="result-actions">
+          <button type="button" class="btn btn-outline btn-sm js-quick-view">Quick view</button>
+          {% if selected_stop %}
+            {% if activity.id in existing_activity_ids %}
+            <form method="post" action="{% url 'destinations:activity-remove' %}">
+              {% csrf_token %}
+              <input type="hidden" name="stop_id" value="{{ selected_stop.id }}">
+              <input type="hidden" name="activity_id" value="{{ activity.id }}">
+              <input type="hidden" name="next" value="{{ request.get_full_path }}">
+              <button type="submit" class="btn btn-outline btn-sm">Remove</button>
+            </form>
+            {% else %}
+            <form method="post" action="{% url 'destinations:activity-add' %}">
+              {% csrf_token %}
+              <input type="hidden" name="stop_id" value="{{ selected_stop.id }}">
+              <input type="hidden" name="activity_id" value="{{ activity.id }}">
+              <input type="hidden" name="next" value="{{ request.get_full_path }}">
+              <button type="submit" class="btn btn-primary btn-sm">Add</button>
+            </form>
+            {% endif %}
+          {% else %}
+            <span style="font-size:0.8rem;color:var(--text-muted);">Select a stop to add this activity.</span>
+          {% endif %}
+        </div>
+      </div>
+    </article>
+    {% empty %}
+    <div class="empty-state">
+      <h3 style="font-size:2rem;margin-bottom:0.5rem;">No matches found</h3>
+      <p>Try clearing one or more filters to reveal more activities.</p>
+      <a href="{% url 'destinations:activity-search' %}{% if selected_stop %}?stop={{ selected_stop.id }}{% endif %}" class="btn btn-outline" style="margin-top:1rem;">Reset filters</a>
+    </div>
+    {% endfor %}
+  </div>
+</div>
+
+<div id="quickViewOverlay" class="quick-view-overlay" aria-hidden="true">
+  <div class="quick-view-panel" role="dialog" aria-modal="true" aria-labelledby="quickViewTitle">
+    <div class="quick-view-media" id="quickViewMedia"></div>
+    <div class="quick-view-body">
+      <div class="quick-view-top">
+        <div>
+          <span class="result-pill" id="quickViewCategory"></span>
+          <h3 id="quickViewTitle"></h3>
+          <p id="quickViewLocation" style="color:var(--text-secondary);"></p>
+        </div>
+        <button type="button" class="quick-view-close" id="quickViewClose" aria-label="Close quick view">&times;</button>
+      </div>
+      <p id="quickViewDescription"></p>
+      <div class="quick-view-stats">
+        <span class="meta-chip" id="quickViewCost"></span>
+        <span class="meta-chip" id="quickViewDuration"></span>
+        <span class="meta-chip" id="quickViewPopularity"></span>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+  document.addEventListener('DOMContentLoaded', () => {
+    const overlay = document.getElementById('quickViewOverlay');
+    const closeBtn = document.getElementById('quickViewClose');
+    const media = document.getElementById('quickViewMedia');
+    const title = document.getElementById('quickViewTitle');
+    const description = document.getElementById('quickViewDescription');
+    const location = document.getElementById('quickViewLocation');
+    const category = document.getElementById('quickViewCategory');
+    const cost = document.getElementById('quickViewCost');
+    const duration = document.getElementById('quickViewDuration');
+    const popularity = document.getElementById('quickViewPopularity');
+
+    const closeOverlay = () => {
+      overlay.classList.remove('open');
+      overlay.setAttribute('aria-hidden', 'true');
+    };
+
+    document.querySelectorAll('.js-quick-view').forEach((button) => {
+      button.addEventListener('click', (event) => {
+        const card = event.currentTarget.closest('.activity-card');
+        if (!card) return;
+
+        const imageUrl = card.dataset.imageUrl;
+        if (imageUrl) {
+          media.innerHTML = `<img src="${imageUrl}" alt="${card.dataset.title}">`;
+        } else {
+          media.innerHTML = '<div style="height:100%;display:flex;align-items:center;justify-content:center;font-size:4rem;">✈️</div>';
+        }
+
+        title.textContent = card.dataset.title || '';
+        description.textContent = card.dataset.description || 'No description added yet.';
+        location.textContent = `${card.dataset.city || ''}, ${card.dataset.country || ''} · ${card.dataset.region || ''}`;
+        category.textContent = card.dataset.category || '';
+        cost.textContent = `Cost: ${card.dataset.cost || ''}`;
+        duration.textContent = `Duration: ${card.dataset.duration || ''} min`;
+        popularity.textContent = `City popularity: ${card.dataset.popularity || ''}`;
+
+        overlay.classList.add('open');
+        overlay.setAttribute('aria-hidden', 'false');
+      });
+    });
+
+    closeBtn.addEventListener('click', closeOverlay);
+    overlay.addEventListener('click', (event) => {
+      if (event.target === overlay) closeOverlay();
+    });
+    document.addEventListener('keydown', (event) => {
+      if (event.key === 'Escape') closeOverlay();
+    });
+  });
+</script>
+{% endblock %}
