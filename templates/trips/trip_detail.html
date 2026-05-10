@@ -15,6 +15,9 @@
   <div class="itinerary-section">
     <div class="itinerary-section-header">
       <h3>{{ stop.city.name }}, {{ stop.city.country }}</h3>
+      <a href="{% url 'destinations:activity-search' %}?stop={{ stop.id }}" class="btn btn-outline btn-sm">
+        Add activities
+      </a>
     </div>
     <div class="itinerary-meta">
       <div class="meta-chip">{{ stop.arrival_date|date:"M d" }} — {{ stop.departure_date|date:"M d" }}</div>
