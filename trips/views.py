@@ -220,3 +220,106 @@ def explore_view(request):
         'trips': trips,
         'query': query,
     })
+
+
+def trip_public_view(request, trip_id):
+    """Public trip view: shareable read-only view of a public trip."""
+    trip = get_object_or_404(Trip, id=trip_id, is_public=True)
+    stops = trip.stops.select_related('city').prefetch_related('stop_activities__activity')
+
+    # Compute budget summary even for public view
+    stay_rate = trip.accommodation_per_day or Decimal('0.00')
+    transport_rate = trip.transport_per_day or Decimal('0.00')
+    meal_rate = Decimal('25.00')
+
+    total_stay = Decimal('0.00')
+    total_activities = Decimal('0.00')
+    total_meals = Decimal('0.00')
+    total_transport = Decimal('0.00')
+    total_days = 0
+    per_stop = []
+
+    for stop in stops:
+        nights = max((stop.departure_date - stop.arrival_date).days, 1)
+        total_days += nights
+
+        stay_cost = stay_rate * Decimal(nights)
+        activities_cost = sum((sa.activity.estimated_cost or Decimal('0.00')) for sa in stop.stop_activities.all())
+        meals_cost = meal_rate * Decimal(nights)
+        transport_cost = transport_rate * Decimal(nights)
+
+        total_stay += stay_cost
+        total_activities += Decimal(activities_cost)
+        total_meals += meals_cost
+        total_transport += transport_cost
+
+        per_stop.append({
+            'stop': stop,
+            'nights': nights,
+            'stay_cost': stay_cost,
+            'activities_cost': Decimal(activities_cost),
+            'meals_cost': meals_cost,
+            'transport_cost': transport_cost,
+            'total_cost': stay_cost + Decimal(activities_cost) + meals_cost + transport_cost,
+        })
+
+    trip_total = total_stay + total_activities + total_meals + total_transport
+    avg_per_day = (trip_total / Decimal(total_days)) if total_days > 0 else trip_total
+
+    return render(request, 'trips/trip_public.html', {
+        'trip': trip,
+        'stops': stops,
+        'budget_summary': {
+            'stay_rate': stay_rate,
+            'transport_rate': transport_rate,
+            'meal_rate': meal_rate,
+            'total_stay': total_stay,
+            'total_activities': total_activities,
+            'total_meals': total_meals,
+            'total_transport': total_transport,
+            'trip_total': trip_total,
+            'avg_per_day': avg_per_day,
+            'per_stop': per_stop,
+        },
+    })
+
+
+@login_required
+def trip_copy_view(request, trip_id):
+    """Copy a public trip to the current user's account."""
+    from django.db import transaction
+    
+    source_trip = get_object_or_404(Trip, id=trip_id, is_public=True)
+
+    with transaction.atomic():
+        # Create new trip for the current user
+        new_trip = Trip.objects.create(
+            user=request.user,
+            name=f"{source_trip.name} (Copy)",
+            description=source_trip.description,
+            start_date=source_trip.start_date,
+            end_date=source_trip.end_date,
+            accommodation_per_day=source_trip.accommodation_per_day,
+            transport_per_day=source_trip.transport_per_day,
+            is_public=False,
+        )
+
+        # Copy all stops and activities
+        for stop in source_trip.stops.all():
+            new_stop = Stop.objects.create(
+                trip=new_trip,
+                city=stop.city,
+                arrival_date=stop.arrival_date,
+                departure_date=stop.departure_date,
+                order=stop.order,
+            )
+            # Copy activities
+            for stop_activity in stop.stop_activities.all():
+                StopActivity.objects.create(
+                    stop=new_stop,
+                    activity=stop_activity.activity,
+                    scheduled_time=stop_activity.scheduled_time,
+                )
+
+    messages.success(request, f'Trip "{source_trip.name}" copied to your account!')
+    return redirect('trip_detail', trip_id=new_trip.id)

@@ -32,7 +32,7 @@
         {% if trip.user == user %}
         <a href="{% url 'trip_detail' trip_id=trip.id %}" class="btn btn-outline btn-sm btn-block">View</a>
         {% else %}
-        <span class="btn btn-ghost btn-sm btn-block" style="cursor:default;opacity:0.7;">Public Trip</span>
+        <a href="{% url 'trip_public' trip_id=trip.id %}" class="btn btn-outline btn-sm btn-block">View</a>
         {% endif %}
       </div>
     </div>
