@@ -1,0 +1,67 @@
+{% extends 'base.html' %}
+{% block title %}My Trips — Traveloop{% endblock %}
+{% block content %}
+<div class="page-container">
+  <div class="page-header">
+    <h1>My Trips</h1>
+    <p class="page-subtitle">Manage all your travel plans</p>
+  </div>
+  <div class="dash-controls">
+    <form class="dash-search" method="get" action="{% url 'trip_list' %}">
+      <span class="search-icon"><svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg></span>
+      <input type="text" name="q" placeholder="Search trips..." value="{{ query }}">
+    </form>
+    <a href="{% url 'trip_create' %}" class="btn btn-primary btn-sm">+ New Trip</a>
+  </div>
+
+  <div class="section-header"><h2>Ongoing</h2><div class="line"></div></div>
+  {% for trip in ongoing %}
+  <div class="trip-list-card">
+    <div class="trip-list-info">
+      <h3>{{ trip.name }}</h3>
+      <p>{{ trip.start_date|date:"M d" }} — {{ trip.end_date|date:"M d, Y" }}</p>
+    </div>
+    <div class="trip-list-actions">
+      <a href="{% url 'trip_detail' trip_id=trip.id %}" class="btn btn-outline btn-sm">View</a>
+      <a href="{% url 'trip_itinerary' trip_id=trip.id %}" class="btn btn-outline btn-sm">Itinerary</a>
+      <a href="{% url 'trip_edit' trip_id=trip.id %}" class="btn btn-ghost btn-sm">Edit</a>
+    </div>
+  </div>
+  {% empty %}
+  <div class="empty-state-inline"><p>No ongoing trips.</p></div>
+  {% endfor %}
+
+  <div class="section-header"><h2>Upcoming</h2><div class="line"></div></div>
+  {% for trip in upcoming %}
+  <div class="trip-list-card">
+    <div class="trip-list-info">
+      <h3>{{ trip.name }}</h3>
+      <p>{{ trip.start_date|date:"M d" }} — {{ trip.end_date|date:"M d, Y" }}</p>
+    </div>
+    <div class="trip-list-actions">
+      <a href="{% url 'trip_detail' trip_id=trip.id %}" class="btn btn-outline btn-sm">View</a>
+      <a href="{% url 'trip_itinerary' trip_id=trip.id %}" class="btn btn-outline btn-sm">Itinerary</a>
+      <a href="{% url 'trip_edit' trip_id=trip.id %}" class="btn btn-ghost btn-sm">Edit</a>
+    </div>
+  </div>
+  {% empty %}
+  <div class="empty-state-inline"><p>No upcoming trips planned.</p></div>
+  {% endfor %}
+
+  <div class="section-header"><h2>Completed</h2><div class="line"></div></div>
+  {% for trip in completed %}
+  <div class="trip-list-card completed">
+    <div class="trip-list-info">
+      <h3>{{ trip.name }}</h3>
+      <p>{{ trip.start_date|date:"M d" }} — {{ trip.end_date|date:"M d, Y" }}</p>
+    </div>
+    <div class="trip-list-actions">
+      <a href="{% url 'trip_detail' trip_id=trip.id %}" class="btn btn-outline btn-sm">View</a>
+    </div>
+  </div>
+  {% empty %}
+  <div class="empty-state-inline"><p>No completed trips yet.</p></div>
+  {% endfor %}
+</div>
+<a href="{% url 'trip_create' %}" class="fab" title="Plan a new trip">+</a>
+{% endblock %}

@@ -1,0 +1,206 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block title %}My Profile — Traveloop{% endblock %}
+
+{% block content %}
+<div class="profile-page">
+
+  <!-- ===== Profile Hero Card ===== -->
+  <div class="profile-hero">
+    <div class="profile-avatar-section">
+      <div class="profile-avatar-wrap">
+        {% if profile.photo %}
+          <img src="{{ profile.photo.url }}" alt="{{ user.username }}" class="profile-avatar-img">
+        {% else %}
+          <svg xmlns="http://www.w3.org/2000/svg" width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg>
+        {% endif %}
+      </div>
+      <h1 class="profile-name">{{ user.first_name }} {{ user.last_name }}</h1>
+      <p class="profile-handle">@{{ user.username }}</p>
+    </div>
+
+    <div class="profile-details-section">
+      <div class="profile-info-grid" id="profileDisplay">
+        <div class="info-item">
+          <span class="info-icon">
+            <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="4" width="20" height="16" rx="2"/><path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7"/></svg>
+          </span>
+          <div>
+            <span class="info-label">Email</span>
+            <span class="info-value">{{ user.email|default:"Not set" }}</span>
+          </div>
+        </div>
+        <div class="info-item">
+          <span class="info-icon">
+            <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72c.127.96.361 1.903.7 2.81a2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0 1 22 16.92z"/></svg>
+          </span>
+          <div>
+            <span class="info-label">Phone</span>
+            <span class="info-value">{{ profile.phone|default:"Not set" }}</span>
+          </div>
+        </div>
+        <div class="info-item">
+          <span class="info-icon">
+            <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z"/><circle cx="12" cy="10" r="3"/></svg>
+          </span>
+          <div>
+            <span class="info-label">Location</span>
+            <span class="info-value">{{ profile.city|default:"" }}{% if profile.city and profile.country %}, {% endif %}{{ profile.country|default:"Not set" }}</span>
+          </div>
+        </div>
+        <div class="info-item info-item-full">
+          <span class="info-icon">
+            <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="17" y1="10" x2="3" y2="10"/><line x1="21" y1="6" x2="3" y2="6"/><line x1="21" y1="14" x2="3" y2="14"/><line x1="17" y1="18" x2="3" y2="18"/></svg>
+          </span>
+          <div>
+            <span class="info-label">Bio</span>
+            <span class="info-value">{{ profile.bio|default:"No bio yet. Tell us about your travel style!" }}</span>
+          </div>
+        </div>
+      </div>
+
+      <button class="btn btn-outline" id="editProfileBtn" type="button">
+        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 3a2.85 2.83 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5Z"/><path d="m15 5 4 4"/></svg>
+        Edit Profile
+      </button>
+
+      <!-- Edit Form (hidden by default) -->
+      <form method="post" enctype="multipart/form-data" class="profile-edit-form" id="profileEditForm" style="display:none;">
+        {% csrf_token %}
+        <div class="form-row">
+          <div class="form-group">
+            <label for="id_first_name">First Name</label>
+            <input type="text" name="first_name" id="id_first_name" class="form-control" value="{{ user.first_name }}">
+          </div>
+          <div class="form-group">
+            <label for="id_last_name">Last Name</label>
+            <input type="text" name="last_name" id="id_last_name" class="form-control" value="{{ user.last_name }}">
+          </div>
+        </div>
+        <div class="form-group">
+          <label for="id_email">Email</label>
+          <input type="email" name="email" id="id_email" class="form-control" value="{{ user.email }}">
+        </div>
+        <div class="form-row">
+          <div class="form-group">
+            <label for="id_phone">Phone</label>
+            <input type="text" name="phone" id="id_phone" class="form-control" value="{{ profile.phone }}">
+          </div>
+          <div class="form-group">
+            <label for="id_city">City</label>
+            <input type="text" name="city" id="id_city" class="form-control" value="{{ profile.city }}">
+          </div>
+        </div>
+        <div class="form-group">
+          <label for="id_country">Country</label>
+          <input type="text" name="country" id="id_country" class="form-control" value="{{ profile.country }}">
+        </div>
+        <div class="form-group">
+          <label for="id_bio">Bio</label>
+          <textarea name="bio" id="id_bio" class="form-control" rows="3">{{ profile.bio }}</textarea>
+        </div>
+        <div class="form-group">
+          <label for="id_photo">Profile Photo</label>
+          <input type="file" name="photo" id="id_photo" class="form-control" accept="image/*">
+        </div>
+        <div class="profile-edit-actions">
+          <button type="submit" class="btn btn-primary">
+            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/><polyline points="7 3 7 8 15 8"/></svg>
+            Save Changes
+          </button>
+          <button type="button" class="btn btn-ghost" id="cancelEditBtn">Cancel</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- ===== Preplanned Trips ===== -->
+  <div class="section-header">
+    <h2>Preplanned Trips</h2>
+    <div class="line"></div>
+  </div>
+  <div class="card-grid">
+    {% if preplanned_trips %}
+      {% for trip in preplanned_trips %}
+      <div class="trip-card">
+        <div class="card-img"><svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M12 2a14.5 14.5 0 0 0 0 20 14.5 14.5 0 0 0 0-20"/><path d="M2 12h20"/></svg></div>
+        <div class="card-body">
+          <h4>{{ trip.name }}</h4>
+          <p>{{ trip.start_date|date:"M d" }} — {{ trip.end_date|date:"M d, Y" }}</p>
+        </div>
+        <div class="card-action">
+          <a href="#" class="btn btn-outline btn-sm btn-block">
+            <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+            View
+          </a>
+        </div>
+      </div>
+      {% endfor %}
+    {% else %}
+      <div class="empty-state">
+        <svg xmlns="http://www.w3.org/2000/svg" width="56" height="56" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1" stroke-linecap="round" stroke-linejoin="round" style="color:var(--text-muted);"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+        <p>No preplanned trips yet. Start planning your next adventure!</p>
+        <a href="#" class="btn btn-primary btn-sm">
+          <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+          Plan a Trip
+        </a>
+      </div>
+    {% endif %}
+  </div>
+
+  <!-- ===== Previous Trips ===== -->
+  <div class="section-header">
+    <h2>Previous Trips</h2>
+    <div class="line"></div>
+  </div>
+  <div class="card-grid">
+    {% if previous_trips %}
+      {% for trip in previous_trips %}
+      <div class="trip-card">
+        <div class="card-img"><svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><polygon points="3 6 9 3 15 6 21 3 21 18 15 21 9 18 3 21"/><line x1="9" y1="3" x2="9" y2="18"/><line x1="15" y1="6" x2="15" y2="21"/></svg></div>
+        <div class="card-body">
+          <h4>{{ trip.name }}</h4>
+          <p>{{ trip.start_date|date:"M d" }} — {{ trip.end_date|date:"M d, Y" }}</p>
+        </div>
+        <div class="card-action">
+          <a href="#" class="btn btn-outline btn-sm btn-block">
+            <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+            View
+          </a>
+        </div>
+      </div>
+      {% endfor %}
+    {% else %}
+      <div class="empty-state">
+        <svg xmlns="http://www.w3.org/2000/svg" width="56" height="56" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1" stroke-linecap="round" stroke-linejoin="round" style="color:var(--text-muted);"><path d="M14.5 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7.5L14.5 2z"/><polyline points="14 2 14 8 20 8"/></svg>
+        <p>No trips completed yet. Your adventure history will appear here!</p>
+      </div>
+    {% endif %}
+  </div>
+
+</div>
+
+<script>
+  // Toggle edit form
+  const editBtn = document.getElementById('editProfileBtn');
+  const cancelBtn = document.getElementById('cancelEditBtn');
+  const editForm = document.getElementById('profileEditForm');
+  const profileDisplay = document.getElementById('profileDisplay');
+
+  if (editBtn && editForm) {
+    editBtn.addEventListener('click', () => {
+      editForm.style.display = 'block';
+      profileDisplay.style.display = 'none';
+      editBtn.style.display = 'none';
+      editForm.style.animation = 'fadeSlideUp 0.4s ease';
+    });
+  }
+  if (cancelBtn && editForm) {
+    cancelBtn.addEventListener('click', () => {
+      editForm.style.display = 'none';
+      profileDisplay.style.display = 'grid';
+      editBtn.style.display = 'inline-flex';
+    });
+  }
+</script>
+{% endblock %}

@@ -1,0 +1,38 @@
+{% extends 'notes/notes_base.html' %}
+{% block title %}Delete Note — Traveloop{% endblock %}
+
+{% block content %}
+<div class="notes-container">
+  <div class="delete-confirm-page">
+    <div class="delete-confirm-icon" aria-hidden="true">
+      <svg width="56" height="56" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+           stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+        <polyline points="3 6 5 6 21 6"/>
+        <path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/>
+        <path d="M10 11v6"/><path d="M14 11v6"/>
+        <path d="M9 6V4a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2"/>
+      </svg>
+    </div>
+    <h1 class="notes-page-title">Delete Note</h1>
+    <p class="delete-confirm-msg">
+      Are you sure you want to delete <strong>"{{ note.title }}"</strong>?
+      This action cannot be undone.
+    </p>
+    <form method="post">
+      {% csrf_token %}
+      <div class="form-actions form-actions--center">
+        <a href="{% url 'notes:notes_list' %}" class="btn btn-ghost">Cancel</a>
+        <button type="submit" class="btn btn-danger">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+               stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <polyline points="3 6 5 6 21 6"/>
+            <path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/>
+            <path d="M10 11v6"/><path d="M14 11v6"/>
+          </svg>
+          Yes, Delete
+        </button>
+      </div>
+    </form>
+  </div>
+</div>
+{% endblock %}

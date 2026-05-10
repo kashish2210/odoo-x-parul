@@ -1,0 +1,39 @@
+{% extends 'base.html' %}
+{% block title %}{{ trip.name }} — Traveloop{% endblock %}
+{% block content %}
+<div class="page-container">
+  <div class="page-header">
+    <h1>{{ trip.name }}</h1>
+    <p class="page-subtitle">{{ trip.start_date|date:"M d, Y" }} — {{ trip.end_date|date:"M d, Y" }}</p>
+  </div>
+  {% if trip.description %}
+  <p style="color:var(--text-secondary);margin-bottom:2rem;">{{ trip.description }}</p>
+  {% endif %}
+
+  <div class="section-header"><h2>Itinerary</h2><div class="line"></div></div>
+  {% for stop in stops %}
+  <div class="itinerary-section">
+    <div class="itinerary-section-header">
+      <h3>{{ stop.city.name }}, {{ stop.city.country }}</h3>
+    </div>
+    <div class="itinerary-meta">
+      <div class="meta-chip">{{ stop.arrival_date|date:"M d" }} — {{ stop.departure_date|date:"M d" }}</div>
+    </div>
+    {% if stop.stop_activities.all %}
+    <ul style="margin-top:0.8rem;padding-left:1.2rem;">
+      {% for sa in stop.stop_activities.all %}
+      <li>{{ sa.activity.name }} {% if sa.scheduled_time %}at {{ sa.scheduled_time }}{% endif %}</li>
+      {% endfor %}
+    </ul>
+    {% endif %}
+  </div>
+  {% empty %}
+  <div class="empty-state-inline"><p>No stops added yet.</p></div>
+  {% endfor %}
+
+  <div style="display:flex;gap:1rem;margin-top:2rem;flex-wrap:wrap;">
+    <a href="{% url 'trip_itinerary' trip_id=trip.id %}" class="btn btn-primary">Edit Itinerary</a>
+    <a href="{% url 'trip_list' %}" class="btn btn-outline">Back to Trips</a>
+  </div>
+</div>
+{% endblock %}

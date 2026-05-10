@@ -67,7 +67,47 @@ def logout_view(request):
 
 @login_required
 def dashboard_view(request):
-    """Main dashboard after login."""
+    """Main dashboard after login — shows real trips and notes summary."""
+    from trips.models import Trip
+    from notes.models import Note
+
+    trips = Trip.objects.filter(user=request.user).order_by('-start_date')[:6]
+    notes_count = Note.objects.filter(user=request.user).count()
+    recent_notes = Note.objects.filter(user=request.user).select_related('trip')[:3]
+
     return render(request, 'accounts/dashboard.html', {
-        'trips': [],  # Will be populated when trips feature is built
+        'trips': trips,
+        'notes_count': notes_count,
+        'recent_notes': recent_notes,
     })
+
+@login_required
+def profile_view(request):
+    """User profile page with inline editing."""
+    profile, _ = UserProfile.objects.get_or_create(user=request.user)
+
+    if request.method == 'POST':
+        # Update User fields
+        request.user.first_name = request.POST.get('first_name', '')
+        request.user.last_name = request.POST.get('last_name', '')
+        request.user.email = request.POST.get('email', '')
+        request.user.save()
+
+        # Update Profile fields
+        profile.phone = request.POST.get('phone', '')
+        profile.city = request.POST.get('city', '')
+        profile.country = request.POST.get('country', '')
+        profile.bio = request.POST.get('bio', '')
+        if request.FILES.get('photo'):
+            profile.photo = request.FILES['photo']
+        profile.save()
+
+        messages.success(request, 'Profile updated successfully!')
+        return redirect('profile')
+
+    return render(request, 'accounts/profile.html', {
+        'profile': profile,
+        'preplanned_trips': [],  # Will be populated when trips feature is built
+        'previous_trips': [],    # Will be populated when trips feature is built
+    })
+
