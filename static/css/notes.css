@@ -3,82 +3,6 @@
    Extends style.css. Does NOT override shared styles.
    ======================================================== */
 
-/* ---------- NOTES HEADER ---------- */
-.notes-nav-header {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  padding: 0.8rem 2rem;
-  background: var(--bg-card);
-  border-bottom: var(--border-sketch);
-  position: sticky;
-  top: 0;
-  z-index: 1000;
-  transition: background 0.3s;
-  gap: 1rem;
-}
-
-.notes-nav-logo {
-  font-family: 'Caveat', cursive;
-  font-size: 1.9rem;
-  font-weight: 700;
-  color: var(--text-primary);
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
-  text-decoration: none;
-  flex-shrink: 0;
-}
-
-.notes-nav-logo svg { color: var(--accent); }
-
-.notes-nav-links {
-  display: flex;
-  align-items: center;
-  gap: 1.6rem;
-}
-
-.notes-nav-link {
-  color: var(--text-secondary);
-  font-weight: 500;
-  font-size: 0.95rem;
-  position: relative;
-  padding: 0.3rem 0;
-  text-decoration: none;
-  transition: color 0.2s;
-}
-
-.notes-nav-link::after {
-  content: '';
-  position: absolute;
-  bottom: 0; left: 0;
-  width: 0; height: 2px;
-  background: var(--accent);
-  transition: width 0.3s;
-}
-
-.notes-nav-link:hover,
-.notes-nav-link.active { color: var(--text-primary); }
-
-.notes-nav-link:hover::after,
-.notes-nav-link.active::after { width: 100%; }
-
-.notes-nav-right {
-  display: flex;
-  align-items: center;
-  gap: 1rem;
-  flex-shrink: 0;
-}
-
-.notes-mobile-toggle {
-  display: none;
-  background: none;
-  border: none;
-  color: var(--text-primary);
-  cursor: pointer;
-  padding: 0.3rem;
-}
-
 /* ---------- TOOLBAR ---------- */
 .notes-toolbar {
   display: flex;
@@ -581,21 +505,6 @@
 
 /* ---------- RESPONSIVE ---------- */
 @media (max-width: 768px) {
-  .notes-nav-header { padding: 0.8rem 1rem; }
-  .notes-mobile-toggle { display: flex; }
-  .notes-nav-links {
-    display: none;
-    position: absolute;
-    top: 61px;
-    left: 0; right: 0;
-    background: var(--bg-card);
-    border-bottom: var(--border-sketch);
-    flex-direction: column;
-    padding: 1rem;
-    gap: 0.8rem;
-    z-index: 999;
-  }
-  .notes-nav-links.open { display: flex; }
   .notes-toolbar { padding: 0.75rem 1rem; }
   .notes-container { padding: 1.2rem 1rem 3rem; }
   .notes-controls-row { flex-direction: column; align-items: stretch; }

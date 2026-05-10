@@ -14,6 +14,7 @@ urlpatterns = [
     path('trips/', include('trips.urls')),
     path('', include('accounts.urls')),
     path('notes/', include('notes.urls', namespace='notes')),
+    path('checklists/', include('checklists.urls', namespace='checklists')),
 ]
 
 if settings.DEBUG:
