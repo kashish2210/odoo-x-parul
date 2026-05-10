@@ -80,7 +80,7 @@ class Invoice(models.Model):
     budget = models.OneToOneField(TripBudget, on_delete=models.CASCADE, related_name='invoice')
     invoice_id = models.CharField(max_length=20, unique=True, editable=False)
     generated_date = models.DateField(auto_now_add=True)
-    tax_percent = models.DecimalField(max_digits=5, decimal_places=2, default=5.00)
+    tax_percent = models.DecimalField(max_digits=5, decimal_places=2, default=Decimal('5.00'))
     discount = models.DecimalField(max_digits=10, decimal_places=2, default=0)
     status = models.CharField(max_length=10, choices=STATUS_CHOICES, default=STATUS_PENDING)
 
@@ -101,7 +101,9 @@ class Invoice(models.Model):
 
     @property
     def tax_amount(self):
-        return (Decimal(str(self.subtotal)) * self.tax_percent / Decimal('100')).quantize(Decimal('0.01'))
+        subtotal_dec = Decimal(str(self.subtotal))
+        tax_percent_dec = Decimal(str(self.tax_percent))
+        return (subtotal_dec * tax_percent_dec / Decimal('100')).quantize(Decimal('0.01'))
 
     @property
     def grand_total(self):
