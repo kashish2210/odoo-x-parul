@@ -2,6 +2,7 @@ from decimal import Decimal
 
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
+from django.db.models import Q
 from django.http import JsonResponse
 from django.shortcuts import get_object_or_404, redirect, render
 from django.utils import timezone
@@ -18,21 +19,38 @@ def trip_list_view(request):
     today = timezone.now().date()
     user_trips = Trip.objects.filter(user=request.user)
 
+    query = request.GET.get('q', '')
+    sort_by = request.GET.get('sort', 'recent')
+    filter_by = request.GET.get('filter', '')
+
+    if query:
+        user_trips = user_trips.filter(
+            Q(name__icontains=query) | Q(description__icontains=query)
+        )
+
+    sort_map = {
+        'recent': '-start_date',
+        'oldest': 'start_date',
+        'name': 'name',
+    }
+    user_trips = user_trips.order_by(sort_map.get(sort_by, '-start_date'))
+
+    if filter_by == 'public':
+        user_trips = user_trips.filter(is_public=True)
+    elif filter_by == 'private':
+        user_trips = user_trips.filter(is_public=False)
+
     ongoing = user_trips.filter(start_date__lte=today, end_date__gte=today)
     upcoming = user_trips.filter(start_date__gt=today)
     completed = user_trips.filter(end_date__lt=today)
-
-    query = request.GET.get('q', '')
-    if query:
-        ongoing = ongoing.filter(name__icontains=query)
-        upcoming = upcoming.filter(name__icontains=query)
-        completed = completed.filter(name__icontains=query)
 
     return render(request, 'trips/trip_list.html', {
         'ongoing': ongoing,
         'upcoming': upcoming,
         'completed': completed,
         'query': query,
+        'sort_by': sort_by,
+        'filter_by': filter_by,
     })
 
 

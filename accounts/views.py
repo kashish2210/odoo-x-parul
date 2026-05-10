@@ -70,15 +70,51 @@ def dashboard_view(request):
     """Main dashboard after login — shows real trips and notes summary."""
     from trips.models import Trip
     from notes.models import Note
+    from django.db.models import Q
 
-    trips = Trip.objects.filter(user=request.user).order_by('-start_date')[:6]
+    query = request.GET.get('q', '').strip()
+    sort_by = request.GET.get('sort', 'recent')
+    group_by = request.GET.get('group', 'all')
+
+    trips = Trip.objects.filter(user=request.user)
+    notes_qs = Note.objects.filter(user=request.user).select_related('trip')
+
+    if query:
+        trips = trips.filter(
+            Q(name__icontains=query) | Q(description__icontains=query)
+        )
+        notes_qs = notes_qs.filter(
+            Q(title__icontains=query) | Q(content__icontains=query)
+        )
+
+    # Sort
+    sort_map = {
+        'recent': '-start_date',
+        'oldest': 'start_date',
+        'name': 'name',
+    }
+    trips = trips.order_by(sort_map.get(sort_by, '-start_date'))
+
+    # Group filter
+    from django.utils import timezone
+    today = timezone.now().date()
+    if group_by == 'ongoing':
+        trips = trips.filter(start_date__lte=today, end_date__gte=today)
+    elif group_by == 'upcoming':
+        trips = trips.filter(start_date__gt=today)
+    elif group_by == 'completed':
+        trips = trips.filter(end_date__lt=today)
+
     notes_count = Note.objects.filter(user=request.user).count()
-    recent_notes = Note.objects.filter(user=request.user).select_related('trip')[:3]
+    recent_notes = notes_qs[:3]
 
     return render(request, 'accounts/dashboard.html', {
-        'trips': trips,
+        'trips': trips[:6],
         'notes_count': notes_count,
         'recent_notes': recent_notes,
+        'query': query,
+        'sort_by': sort_by,
+        'group_by': group_by,
     })
 
 @login_required

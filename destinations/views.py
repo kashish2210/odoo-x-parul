@@ -2,13 +2,24 @@ from django.contrib import messages
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.core.exceptions import PermissionDenied
 from django.db.models import Q
+from django.http import JsonResponse
 from django.shortcuts import get_object_or_404, redirect
 from django.urls import reverse_lazy
 from django.views.generic import ListView, View
 
 from trips.models import Stop, StopActivity
 
-from .models import Activity
+from .models import Activity, City
+
+
+def cities_api_view(request):
+    """Return all geocoded cities as JSON."""
+    cities = City.objects.exclude(
+        latitude__isnull=True
+    ).exclude(
+        longitude__isnull=True
+    ).values('id', 'name', 'country', 'region', 'latitude', 'longitude', 'description')
+    return JsonResponse(list(cities), safe=False)
 
 
 def get_owned_stop_or_404(stop_id, user):
