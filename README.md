@@ -31,7 +31,7 @@ Traveloop is an interactive, modern web application designed to help users plan 
 <img width="953" height="668" alt="image" src="https://github.com/user-attachments/assets/2fcad94b-e0b0-49e1-9643-9aa9c8d6aa53" />
 <img width="871" height="831" alt="image" src="https://github.com/user-attachments/assets/51b723ea-c3de-45f5-b559-2cb531a70c52" />
 <img width="410" height="685" alt="image" src="https://github.com/user-attachments/assets/97e6e04f-5e42-4982-be24-c1238bc34c13" />
-*(Add screenshots of your application here)*
+
 
 ### Dashboard
 <!-- <img src="link-to-dashboard-screenshot.png" alt="Dashboard" width="800"> -->
