@@ -50,6 +50,9 @@ class StopActivity(models.Model):
 
     class Meta:
         ordering = ['scheduled_time', 'id']
+        constraints = [
+            models.UniqueConstraint(fields=['stop', 'activity'], name='unique_activity_per_stop'),
+        ]
         indexes = [
             models.Index(fields=['stop']),
         ]
