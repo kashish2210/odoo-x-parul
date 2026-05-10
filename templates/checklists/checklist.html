@@ -1,0 +1,182 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Packing Checklist — Traveloop{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'css/checklists.css' %}">
+{% endblock %}
+
+{% block content %}
+<div class="checklist-container">
+  <div class="notes-toolbar" role="search">
+    <div class="notes-search-wrap">
+      <span class="notes-search-icon" aria-hidden="true">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+             stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <circle cx="11" cy="11" r="8"/>
+          <line x1="21" y1="21" x2="16.65" y2="16.65"/>
+        </svg>
+      </span>
+      <input type="text" id="notesSearchInput" class="notes-search-input"
+             placeholder="Search bar ......" value="{{ query }}"
+             autocomplete="off" aria-label="Search items">
+    </div>
+    <button class="btn btn-outline filter-btn" id="groupByBtn">Group by</button>
+    <button class="btn btn-outline filter-btn" id="filterBtn">Filter</button>
+    <button class="btn btn-outline filter-btn" id="sortByBtn">Sort by...</button>
+  </div>
+
+  <h1 class="notes-page-title">Packing checklist</h1>
+  
+  <div class="notes-controls-row">
+    <form method="get" id="tripFilterForm" class="trip-selector-form">
+      <div class="trip-selector-wrap">
+        <select name="trip" id="tripSelect" class="trip-selector"
+                onchange="document.getElementById('tripFilterForm').submit()"
+                aria-label="Filter items by trip">
+          <option value="">Select a trip...</option>
+          {% for trip in trips %}
+          <option value="{{ trip.pk }}" {% if trip_id == trip.pk|stringformat:'s' %}selected{% endif %}>
+            Trip: {{ trip.name }}
+          </option>
+          {% endfor %}
+        </select>
+        <span class="trip-selector-arrow" aria-hidden="true">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+               stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+            <polyline points="6 9 12 15 18 9"/>
+          </svg>
+        </span>
+      </div>
+    </form>
+  </div>
+
+  {% if selected_trip %}
+  <div class="progress-section">
+    <div class="progress-text">Progress: <span id="packedCount">{{ packed_items }}</span>/<span id="totalCount">{{ total_items }}</span> items packed</div>
+    <div class="progress-bar-container">
+      <div class="progress-bar-fill" id="progressBarFill" style="width: {{ progress_percent }}%;"></div>
+    </div>
+  </div>
+
+  <div class="checklist-items">
+    {% for category_label, data in grouped_items.items %}
+    <div class="category-section" id="category-{{ data.code }}">
+      <div class="category-header">
+        <h3 class="category-title">{{ category_label }}</h3>
+        <div class="category-count"><span id="catPacked-{{ data.code }}">{{ data.packed }}</span>/{{ data.total }}</div>
+      </div>
+      
+      <ul class="items-list">
+        {% for item in data.items %}
+        <li class="item-row">
+          <label class="custom-checkbox">
+            <input type="checkbox" class="item-checkbox" data-id="{{ item.pk }}" {% if item.is_packed %}checked{% endif %}>
+            <span class="checkmark"></span>
+            <span class="item-name">{{ item.name }}</span>
+          </label>
+          <form method="post" action="{% url 'checklists:delete_item' item.pk %}" class="delete-inline-form">
+            {% csrf_token %}
+            <button type="submit" class="btn-delete-item" title="Delete item">×</button>
+          </form>
+        </li>
+        {% endfor %}
+      </ul>
+    </div>
+    {% endfor %}
+  </div>
+
+  <div class="action-buttons">
+    <button class="btn btn-outline" id="openAddItemModal" aria-haspopup="dialog" aria-controls="addItemModal">
+      + add item to checklist
+    </button>
+    <button class="btn btn-outline" id="resetChecklistBtn">
+      Reset all
+    </button>
+    <button class="btn btn-outline" id="shareChecklistBtn">
+      Share Checklist
+    </button>
+  </div>
+  {% else %}
+  <div class="notes-empty" role="status">
+    <div class="notes-empty__icon" aria-hidden="true">
+      <svg width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+           stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
+        <polyline points="14 2 14 8 20 8"/>
+        <line x1="16" y1="13" x2="8" y2="13"/>
+        <line x1="16" y1="17" x2="8" y2="17"/>
+      </svg>
+    </div>
+    <p class="notes-empty__title">Select a trip</p>
+    <p class="notes-empty__sub">Choose a trip to manage your packing checklist.</p>
+  </div>
+  {% endif %}
+</div>
+
+<!-- ===== ADD ITEM MODAL ===== -->
+<div class="notes-modal-overlay" id="addItemModal" role="dialog" aria-modal="true" aria-labelledby="modalTitle" hidden>
+  <div class="notes-modal notes-modal--sm">
+    <div class="notes-modal__header">
+      <h2 class="notes-modal__title" id="modalTitle">Add Item</h2>
+      <button class="modal-close-btn" id="closeAddItemModal" aria-label="Close modal">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+      </button>
+    </div>
+    <form method="post" action="{% url 'checklists:add_item' %}" id="addItemForm">
+      {% csrf_token %}
+      <input type="hidden" name="trip_id" value="{{ trip_id }}">
+      
+      <div class="form-group">
+        <label for="item_name">Item Name</label>
+        <input type="text" name="name" id="item_name" class="form-control" required placeholder="e.g. Passport">
+      </div>
+      
+      <div class="form-group">
+        <label for="item_category">Category</label>
+        <select name="category" id="item_category" class="form-control" required>
+          {% for code, label in categories %}
+          <option value="{{ code }}">{{ label }}</option>
+          {% endfor %}
+        </select>
+      </div>
+      
+      <div class="notes-modal__footer">
+        <button type="button" class="btn btn-ghost" id="cancelAddItemModal">Cancel</button>
+        <button type="submit" class="btn btn-primary">Add Item</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<!-- ===== RESET CONFIRM MODAL ===== -->
+<div class="notes-modal-overlay" id="resetConfirmModal" role="dialog" aria-modal="true" aria-labelledby="resetModalTitle" hidden>
+  <div class="notes-modal notes-modal--sm">
+    <div class="notes-modal__header">
+      <h2 class="notes-modal__title" id="resetModalTitle">Reset Checklist</h2>
+    </div>
+    <div class="delete-confirm-body">
+      <p id="resetConfirmText">Are you sure you want to reset all items to unpacked?</p>
+    </div>
+    <div class="notes-modal__footer">
+      <button type="button" class="btn btn-ghost" id="cancelResetModal">Cancel</button>
+      <form method="post" action="{% url 'checklists:reset_checklist' %}">
+        {% csrf_token %}
+        <input type="hidden" name="trip_id" value="{{ trip_id }}">
+        <button type="submit" class="btn btn-danger">Reset All</button>
+      </form>
+    </div>
+  </div>
+</div>
+
+<div class="modal-backdrop" id="modalBackdrop" hidden></div>
+
+{% block extra_js %}
+<script>
+  const CSRF_TOKEN = "{{ csrf_token }}";
+</script>
+<script src="{% static 'js/checklists.js' %}"></script>
+{% endblock %}
+
+{% endblock %}

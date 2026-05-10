@@ -1,76 +1,27 @@
 // ========== TRAVELOOP NOTES — notes.js ==========
+// Handles: live search, filter tabs, and modal logic.
 
 document.addEventListener('DOMContentLoaded', () => {
-  fixToggleSVG();
-  initNotesThemeToggle();
-  initNotesMobileMenu();
   initModals();
   initLiveSearch();
   initFilterTabs();
+  initNotesThemeAccessibility();
 });
 
-// -------- THEME TOGGLE (SVG — overrides main.js emoji) --------
-
-const SVG_SUN = `<svg class="icon-sun" width="12" height="12" viewBox="0 0 24 24" fill="none"
-  stroke="currentColor" stroke-width="2.5" aria-hidden="true">
-  <circle cx="12" cy="12" r="5"/>
-  <line x1="12" y1="1" x2="12" y2="3"/>
-  <line x1="12" y1="21" x2="12" y2="23"/>
-  <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/>
-  <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/>
-  <line x1="1" y1="12" x2="3" y2="12"/>
-  <line x1="21" y1="12" x2="23" y2="12"/>
-  <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/>
-  <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/>
-</svg>`;
-
-const SVG_MOON = `<svg class="icon-moon" width="12" height="12" viewBox="0 0 24 24" fill="none"
-  stroke="currentColor" stroke-width="2.5" aria-hidden="true">
-  <path d="M21 12.79A9 9 0 1 1 11.21 3a7 7 0 0 0 9.79 9.79z"/>
-</svg>`;
-
-function fixToggleSVG() {
-  const thumb = document.getElementById('toggleThumb');
-  if (!thumb) return;
-  const isDark = document.documentElement.getAttribute('data-theme') === 'dark';
-  thumb.innerHTML = isDark ? SVG_MOON : SVG_SUN;
-}
-
-function initNotesThemeToggle() {
-  // Override main.js emoji updater with SVG version
-  window.updateToggleIcon = fixToggleSVG;
-  fixToggleSVG();
-
+// -------- THEME TOGGLE ACCESSIBILITY --------
+function initNotesThemeAccessibility() {
   const toggle = document.getElementById('themeToggle');
   if (toggle) {
     toggle.addEventListener('keydown', (e) => {
-      if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); toggle.click(); }
+      if (e.key === 'Enter' || e.key === ' ') {
+        e.preventDefault();
+        toggle.click();
+      }
     });
   }
 }
 
-// -------- MOBILE MENU --------
-
-function initNotesMobileMenu() {
-  const btn = document.getElementById('notesMobileToggle');
-  const nav = document.getElementById('notesNavLinks');
-  if (!btn || !nav) return;
-
-  btn.addEventListener('click', () => {
-    const isOpen = nav.classList.toggle('open');
-    btn.setAttribute('aria-expanded', isOpen ? 'true' : 'false');
-  });
-
-  document.addEventListener('click', (e) => {
-    if (!btn.contains(e.target) && !nav.contains(e.target)) {
-      nav.classList.remove('open');
-      btn.setAttribute('aria-expanded', 'false');
-    }
-  });
-}
-
 // -------- MODALS --------
-
 let pendingDeleteFormId = null;
 
 function initModals() {
@@ -80,6 +31,7 @@ function initModals() {
   const backdrop    = document.getElementById('modalBackdrop');
 
   function openModal(modal) {
+    if (!modal) return;
     modal.hidden = false;
     if (backdrop) backdrop.hidden = false;
     document.body.style.overflow = 'hidden';
@@ -88,6 +40,7 @@ function initModals() {
   }
 
   function closeModal(modal) {
+    if (!modal) return;
     modal.hidden = true;
     if (backdrop) backdrop.hidden = true;
     document.body.style.overflow = '';
@@ -121,7 +74,8 @@ function initModals() {
   document.addEventListener('keydown', (e) => { if (e.key === 'Escape') closeAll(); });
 }
 
-function openEditModal(pk, title, content, stopName, dayLabel, tripPk) {
+// Global functions called from HTML
+window.openEditModal = function(pk, title, content, stopName, dayLabel, tripPk) {
   const modal = document.getElementById('editNoteModal');
   if (!modal) return;
 
@@ -141,9 +95,9 @@ function openEditModal(pk, title, content, stopName, dayLabel, tripPk) {
   if (backdrop) backdrop.hidden = false;
   document.body.style.overflow = 'hidden';
   setTimeout(() => { const t = document.getElementById('edit_title'); if (t) t.focus(); }, 50);
-}
+};
 
-function confirmDeleteNote(pk, title) {
+window.confirmDeleteNote = function(pk, title) {
   const modal  = document.getElementById('deleteConfirmModal');
   const textEl = document.getElementById('deleteConfirmText');
   if (!modal) return;
@@ -153,7 +107,7 @@ function confirmDeleteNote(pk, title) {
   const backdrop = document.getElementById('modalBackdrop');
   if (backdrop) backdrop.hidden = false;
   document.body.style.overflow = 'hidden';
-}
+};
 
 function escapeHtml(str) {
   const d = document.createElement('div');
@@ -162,7 +116,6 @@ function escapeHtml(str) {
 }
 
 // -------- LIVE SEARCH --------
-
 function initLiveSearch() {
   const input = document.getElementById('notesSearchInput');
   if (!input) return;
@@ -199,7 +152,6 @@ function getActiveGroup() {
 }
 
 // -------- FILTER TABS --------
-
 function initFilterTabs() {
   document.querySelectorAll('.filter-tab').forEach(tab => {
     tab.addEventListener('click', () => {

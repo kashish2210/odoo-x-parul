@@ -43,6 +43,7 @@ INSTALLED_APPS = [
     'checklists',
     'budget',
     'notes',
+    'community',
 ]
 
 MIDDLEWARE = [
