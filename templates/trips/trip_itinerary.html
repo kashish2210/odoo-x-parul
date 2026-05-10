@@ -48,7 +48,16 @@
       <h4>Activities</h4>
       <ul>
         {% for sa in stop.stop_activities.all %}
-        <li>{{ sa.activity.name }} {% if sa.scheduled_time %}at {{ sa.scheduled_time }}{% endif %}</li>
+        <li style="display:flex;align-items:center;gap:0.5rem;">
+          <span>{{ sa.activity.name }} {% if sa.scheduled_time %}at {{ sa.scheduled_time }}{% endif %}</span>
+          <form method="post" action="{% url 'destinations:activity-remove' %}" style="margin:0;">
+            {% csrf_token %}
+            <input type="hidden" name="stop_id" value="{{ stop.id }}">
+            <input type="hidden" name="activity_id" value="{{ sa.activity.id }}">
+            <input type="hidden" name="next" value="{{ request.get_full_path }}">
+            <button type="submit" class="btn btn-ghost btn-sm btn-remove" title="Remove activity" onclick="return confirm('Remove this activity from the stop?')">Remove</button>
+          </form>
+        </li>
         {% endfor %}
       </ul>
     </div>

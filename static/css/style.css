@@ -298,6 +298,20 @@ h1, h2, h3, h4, h5 {
 .btn-lg { padding: 0.85rem 2.2rem; font-size: 1rem; }
 .btn-block { width: 100%; }
 
+/* Danger / remove button variant */
+.btn-remove {
+  background: transparent;
+  color: var(--danger);
+  border: none;
+  box-shadow: none;
+}
+.btn-remove:hover {
+  background: rgba(231,76,60,0.10);
+  color: var(--danger);
+  transform: translate(-1px, -1px);
+}
+.btn-remove:focus { outline: none; }
+
 /* ---------- FORM ELEMENTS ---------- */
 .form-group {
   margin-bottom: 1.2rem;
