@@ -12,8 +12,9 @@ from destinations.models import City, Activity
 @login_required
 def trip_list_view(request):
     """Screen 6: My Trips — grouped by Ongoing, Upcoming, Completed."""
+    import json
     today = timezone.now().date()
-    user_trips = Trip.objects.filter(user=request.user)
+    user_trips = Trip.objects.filter(user=request.user).prefetch_related('stops__city')
 
     ongoing = user_trips.filter(start_date__lte=today, end_date__gte=today)
     upcoming = user_trips.filter(start_date__gt=today)
@@ -25,11 +26,29 @@ def trip_list_view(request):
         upcoming = upcoming.filter(name__icontains=query)
         completed = completed.filter(name__icontains=query)
 
+    # Build JSON for the globe
+    trips_data = []
+    for trip in user_trips:
+        stops_data = []
+        for stop in trip.stops.all():
+            if stop.city.latitude and stop.city.longitude:
+                stops_data.append({
+                    'name': stop.city.name,
+                    'lat': float(stop.city.latitude),
+                    'lng': float(stop.city.longitude)
+                })
+        trips_data.append({
+            'id': trip.id,
+            'name': trip.name,
+            'stops': stops_data
+        })
+
     return render(request, 'trips/trip_list.html', {
         'ongoing': ongoing,
         'upcoming': upcoming,
         'completed': completed,
         'query': query,
+        'trips_json': json.dumps(trips_data)
     })
 
 

@@ -1,67 +1,166 @@
 {% extends 'base.html' %}
 {% block title %}My Trips — Traveloop{% endblock %}
 {% block content %}
-<div class="page-container">
-  <div class="page-header">
-    <h1>My Trips</h1>
-    <p class="page-subtitle">Manage all your travel plans</p>
-  </div>
-  <div class="dash-controls">
-    <form class="dash-search" method="get" action="{% url 'trip_list' %}">
-      <span class="search-icon"><svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg></span>
-      <input type="text" name="q" placeholder="Search trips..." value="{{ query }}">
-    </form>
-    <a href="{% url 'trip_create' %}" class="btn btn-primary btn-sm">+ New Trip</a>
+<style>
+  .trips-split-layout {
+    display: flex;
+    height: calc(100vh - 70px); /* adjust for header */
+    overflow: hidden;
+  }
+  .trips-list-pane {
+    flex: 0 0 500px;
+    padding: 2rem;
+    overflow-y: auto;
+    background: var(--bg-color);
+    border-right: 1px solid var(--border-color);
+  }
+  .globe-pane {
+    flex: 1;
+    position: relative;
+    background: #000; /* Space background */
+  }
+  .trip-list-card {
+    cursor: pointer;
+    transition: transform 0.2s, box-shadow 0.2s;
+  }
+  .trip-list-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+    border-color: var(--accent);
+  }
+  @media (max-width: 900px) {
+    .trips-split-layout { flex-direction: column-reverse; height: auto; }
+    .trips-list-pane { flex: none; width: 100%; border-right: none; }
+    .globe-pane { height: 400px; width: 100%; }
+  }
+</style>
+
+<div class="trips-split-layout">
+  <!-- Left Side: List -->
+  <div class="trips-list-pane">
+    <div class="page-header" style="text-align:left;margin-bottom:1rem;">
+      <h1>My Trips</h1>
+      <p class="page-subtitle">Manage all your travel plans</p>
+    </div>
+    <div class="dash-controls" style="justify-content:space-between; margin-bottom: 2rem;">
+      <form class="dash-search" method="get" action="{% url 'trip_list' %}" style="flex:1; margin-right:1rem;">
+        <span class="search-icon"><svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg></span>
+        <input type="text" name="q" placeholder="Search trips..." value="{{ query }}">
+      </form>
+      <a href="{% url 'trip_create' %}" class="btn btn-primary btn-sm">+ New Trip</a>
+    </div>
+
+    <div class="section-header"><h2>Ongoing</h2><div class="line"></div></div>
+    {% for trip in ongoing %}
+    <div class="trip-list-card" onclick="focusTripGlobe({{ trip.id }})">
+      <div class="trip-list-info">
+        <h3>{{ trip.name }}</h3>
+        <p>{{ trip.start_date|date:"M d" }} — {{ trip.end_date|date:"M d, Y" }}</p>
+      </div>
+      <div class="trip-list-actions">
+        <a href="{% url 'trip_detail' trip_id=trip.id %}" class="btn btn-outline btn-sm" onclick="event.stopPropagation()">View</a>
+        <a href="{% url 'trip_itinerary' trip_id=trip.id %}" class="btn btn-outline btn-sm" onclick="event.stopPropagation()">Itinerary</a>
+        <a href="{% url 'trip_edit' trip_id=trip.id %}" class="btn btn-ghost btn-sm" onclick="event.stopPropagation()">Edit</a>
+      </div>
+    </div>
+    {% empty %}
+    <div class="empty-state-inline"><p>No ongoing trips.</p></div>
+    {% endfor %}
+
+    <div class="section-header"><h2>Upcoming</h2><div class="line"></div></div>
+    {% for trip in upcoming %}
+    <div class="trip-list-card" onclick="focusTripGlobe({{ trip.id }})">
+      <div class="trip-list-info">
+        <h3>{{ trip.name }}</h3>
+        <p>{{ trip.start_date|date:"M d" }} — {{ trip.end_date|date:"M d, Y" }}</p>
+      </div>
+      <div class="trip-list-actions">
+        <a href="{% url 'trip_detail' trip_id=trip.id %}" class="btn btn-outline btn-sm" onclick="event.stopPropagation()">View</a>
+        <a href="{% url 'trip_itinerary' trip_id=trip.id %}" class="btn btn-outline btn-sm" onclick="event.stopPropagation()">Itinerary</a>
+        <a href="{% url 'trip_edit' trip_id=trip.id %}" class="btn btn-ghost btn-sm" onclick="event.stopPropagation()">Edit</a>
+      </div>
+    </div>
+    {% empty %}
+    <div class="empty-state-inline"><p>No upcoming trips planned.</p></div>
+    {% endfor %}
+
+    <div class="section-header"><h2>Completed</h2><div class="line"></div></div>
+    {% for trip in completed %}
+    <div class="trip-list-card completed" onclick="focusTripGlobe({{ trip.id }})">
+      <div class="trip-list-info">
+        <h3>{{ trip.name }}</h3>
+        <p>{{ trip.start_date|date:"M d" }} — {{ trip.end_date|date:"M d, Y" }}</p>
+      </div>
+      <div class="trip-list-actions">
+        <a href="{% url 'trip_detail' trip_id=trip.id %}" class="btn btn-outline btn-sm" onclick="event.stopPropagation()">View</a>
+      </div>
+    </div>
+    {% empty %}
+    <div class="empty-state-inline"><p>No completed trips yet.</p></div>
+    {% endfor %}
   </div>
 
-  <div class="section-header"><h2>Ongoing</h2><div class="line"></div></div>
-  {% for trip in ongoing %}
-  <div class="trip-list-card">
-    <div class="trip-list-info">
-      <h3>{{ trip.name }}</h3>
-      <p>{{ trip.start_date|date:"M d" }} — {{ trip.end_date|date:"M d, Y" }}</p>
-    </div>
-    <div class="trip-list-actions">
-      <a href="{% url 'trip_detail' trip_id=trip.id %}" class="btn btn-outline btn-sm">View</a>
-      <a href="{% url 'trip_itinerary' trip_id=trip.id %}" class="btn btn-outline btn-sm">Itinerary</a>
-      <a href="{% url 'trip_edit' trip_id=trip.id %}" class="btn btn-ghost btn-sm">Edit</a>
-    </div>
-  </div>
-  {% empty %}
-  <div class="empty-state-inline"><p>No ongoing trips.</p></div>
-  {% endfor %}
-
-  <div class="section-header"><h2>Upcoming</h2><div class="line"></div></div>
-  {% for trip in upcoming %}
-  <div class="trip-list-card">
-    <div class="trip-list-info">
-      <h3>{{ trip.name }}</h3>
-      <p>{{ trip.start_date|date:"M d" }} — {{ trip.end_date|date:"M d, Y" }}</p>
-    </div>
-    <div class="trip-list-actions">
-      <a href="{% url 'trip_detail' trip_id=trip.id %}" class="btn btn-outline btn-sm">View</a>
-      <a href="{% url 'trip_itinerary' trip_id=trip.id %}" class="btn btn-outline btn-sm">Itinerary</a>
-      <a href="{% url 'trip_edit' trip_id=trip.id %}" class="btn btn-ghost btn-sm">Edit</a>
-    </div>
-  </div>
-  {% empty %}
-  <div class="empty-state-inline"><p>No upcoming trips planned.</p></div>
-  {% endfor %}
-
-  <div class="section-header"><h2>Completed</h2><div class="line"></div></div>
-  {% for trip in completed %}
-  <div class="trip-list-card completed">
-    <div class="trip-list-info">
-      <h3>{{ trip.name }}</h3>
-      <p>{{ trip.start_date|date:"M d" }} — {{ trip.end_date|date:"M d, Y" }}</p>
-    </div>
-    <div class="trip-list-actions">
-      <a href="{% url 'trip_detail' trip_id=trip.id %}" class="btn btn-outline btn-sm">View</a>
-    </div>
-  </div>
-  {% empty %}
-  <div class="empty-state-inline"><p>No completed trips yet.</p></div>
-  {% endfor %}
+  <!-- Right Side: Globe -->
+  <div class="globe-pane" id="globeContainer"></div>
 </div>
-<a href="{% url 'trip_create' %}" class="fab" title="Plan a new trip">+</a>
+
+{% endblock %}
+
+{% block extra_js %}
+<script src="//unpkg.com/globe.gl"></script>
+<script>
+  const tripsData = {{ trips_json|safe }};
+  const globeContainer = document.getElementById('globeContainer');
+  
+  // Extract all points for pins
+  const gData = [];
+  tripsData.forEach(trip => {
+    trip.stops.forEach(stop => {
+      gData.push({
+        lat: stop.lat,
+        lng: stop.lng,
+        name: stop.name,
+        tripName: trip.name
+      });
+    });
+  });
+
+  // Initialize Globe
+  const world = Globe()
+    (globeContainer)
+    .globeImageUrl('//unpkg.com/three-globe/example/img/earth-blue-marble.jpg')
+    .backgroundImageUrl('//unpkg.com/three-globe/example/img/night-sky.png')
+    .labelsData(gData)
+    .labelLat(d => d.lat)
+    .labelLng(d => d.lng)
+    .labelText(d => d.name)
+    .labelSize(d => 1.5)
+    .labelDotRadius(d => 0.5)
+    .labelColor(() => 'rgba(255, 165, 0, 0.9)')
+    .labelResolution(2)
+    .onLabelClick((d) => {
+      world.pointOfView({ lat: d.lat, lng: d.lng, altitude: 0.5 }, 1000);
+    });
+
+  // Handle resizing
+  window.addEventListener('resize', () => {
+    world.width(globeContainer.clientWidth);
+    world.height(globeContainer.clientHeight);
+  });
+  
+  // Auto-rotate initially
+  world.controls().autoRotate = true;
+  world.controls().autoRotateSpeed = 0.5;
+
+  // Zoom to trip when card is clicked
+  function focusTripGlobe(tripId) {
+    const trip = tripsData.find(t => t.id === tripId);
+    if (trip && trip.stops.length > 0) {
+      world.controls().autoRotate = false;
+      const firstStop = trip.stops[0];
+      // Smoothly zoom in to the first stop's location
+      world.pointOfView({ lat: firstStop.lat, lng: firstStop.lng, altitude: 0.4 }, 2000);
+    }
+  }
+</script>
 {% endblock %}

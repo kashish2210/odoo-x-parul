@@ -7,9 +7,6 @@
 
   <ul class="nav-links" id="navLinks">
     {% if user.is_authenticated %}
-    <li><a href="{% url 'dashboard' %}" class="{% if request.resolver_match.url_name == 'dashboard' %}active{% endif %}">Dashboard</a></li>
-    <li><a href="#">My Trips</a></li>
-    <li><a href="{% url 'destinations:activity-search' %}" class="{% if request.resolver_match.url_name == 'activity-search' %}active{% endif %}">Explore</a></li>
     <li><a href="{% url 'notes:notes_list' %}" class="{% if 'notes' in request.resolver_match.app_names %}active{% endif %}">Trip Notes</a></li>
     <li><a href="{% url 'trip_list' %}" class="{% if request.resolver_match.url_name == 'trip_list' %}active{% endif %}">My Trips</a></li>
     <li><a href="{% url 'trip_create' %}" class="{% if request.resolver_match.url_name == 'trip_create' %}active{% endif %}">Create Trip</a></li>
