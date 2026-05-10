@@ -1,0 +1,103 @@
+{% extends 'base.html' %}
+{% block title %}Dashboard — Traveloop{% endblock %}
+
+{% block content %}
+<div class="dashboard">
+
+  <!-- Welcome -->
+  <div class="dash-welcome">
+    <h1>Hey, {{ user.first_name|default:user.username }}! ✨</h1>
+    <p>Ready to plan your next adventure?</p>
+  </div>
+
+  <!-- Banner -->
+  <div class="dash-banner">
+    <div class="banner-text">
+      <h2>Explore the World</h2>
+      <p>Plan trips, discover cities, and travel smarter</p>
+    </div>
+  </div>
+
+  <!-- Search & Filters -->
+  <div class="dash-controls">
+    <div class="dash-search">
+      <span class="search-icon">🔍</span>
+      <input type="text" placeholder="Search destinations, trips..." id="dashSearch">
+    </div>
+    <button class="btn btn-outline filter-btn">Group by</button>
+    <button class="btn btn-outline filter-btn">Filter</button>
+    <button class="btn btn-outline filter-btn">Sort by…</button>
+  </div>
+
+  <!-- Top Regional Selections -->
+  <div class="section-header">
+    <h2>Top Regional Selections</h2>
+    <div class="line"></div>
+  </div>
+  <div class="card-grid">
+    <div class="trip-card">
+      <div class="card-img">🏔️</div>
+      <div class="card-body">
+        <h4>Himalayas</h4>
+        <p>India · Mountain treks</p>
+      </div>
+    </div>
+    <div class="trip-card">
+      <div class="card-img">🏖️</div>
+      <div class="card-body">
+        <h4>Bali</h4>
+        <p>Indonesia · Beach paradise</p>
+      </div>
+    </div>
+    <div class="trip-card">
+      <div class="card-img">🗼</div>
+      <div class="card-body">
+        <h4>Paris</h4>
+        <p>France · City of lights</p>
+      </div>
+    </div>
+    <div class="trip-card">
+      <div class="card-img">🌸</div>
+      <div class="card-body">
+        <h4>Tokyo</h4>
+        <p>Japan · Culture & tech</p>
+      </div>
+    </div>
+    <div class="trip-card">
+      <div class="card-img">🏜️</div>
+      <div class="card-body">
+        <h4>Dubai</h4>
+        <p>UAE · Luxury & desert</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- Previous Trips -->
+  <div class="section-header">
+    <h2>Previous Trips</h2>
+    <div class="line"></div>
+  </div>
+  <div class="card-grid">
+    {% if trips %}
+      {% for trip in trips %}
+      <div class="trip-card">
+        <div class="card-img">🗺️</div>
+        <div class="card-body">
+          <h4>{{ trip.name }}</h4>
+          <p>{{ trip.start_date|date:"M d" }} — {{ trip.end_date|date:"M d, Y" }}</p>
+        </div>
+      </div>
+      {% endfor %}
+    {% else %}
+      <div style="grid-column:1/-1;text-align:center;padding:2rem;color:var(--text-muted);">
+        <p style="font-size:2.5rem;margin-bottom:0.5rem;">🌍</p>
+        <p>No trips yet! Click the <strong>+</strong> button to plan your first adventure.</p>
+      </div>
+    {% endif %}
+  </div>
+
+</div>
+
+<!-- FAB - Plan a trip -->
+<a href="#" class="fab" title="Plan a new trip" id="fabNewTrip">+</a>
+{% endblock %}

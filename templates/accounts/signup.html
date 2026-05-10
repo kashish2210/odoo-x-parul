@@ -1,0 +1,111 @@
+{% extends 'base.html' %}
+{% block title %}Sign Up — Traveloop{% endblock %}
+
+{% block content %}
+<div class="auth-wrapper">
+  <div class="auth-card signup-card">
+    <label for="id_photo" style="cursor:pointer;">
+      <div class="auth-avatar" id="avatarPreview">
+        📷
+        <div class="avatar-overlay">Upload</div>
+      </div>
+    </label>
+    <input type="file" name="photo" id="id_photo" accept="image/*"
+           style="display:none;" onchange="previewAvatar(this)" form="signupForm">
+
+    <h2>Join Traveloop</h2>
+    <p class="auth-subtitle">Create your account and start planning</p>
+
+    <form method="post" id="signupForm" enctype="multipart/form-data">
+      {% csrf_token %}
+
+      {% if form.non_field_errors %}
+      <div class="form-error" style="text-align:center;margin-bottom:1rem;">
+        {% for error in form.non_field_errors %}
+        <p>{{ error }}</p>
+        {% endfor %}
+      </div>
+      {% endif %}
+
+      <div class="form-row">
+        <div class="form-group">
+          <label for="id_first_name">First Name</label>
+          <input type="text" name="first_name" id="id_first_name" class="form-control"
+                 placeholder="First name" value="{{ form.first_name.value|default_if_none:'' }}" required>
+          {% if form.first_name.errors %}<div class="form-error">{{ form.first_name.errors.0 }}</div>{% endif %}
+        </div>
+        <div class="form-group">
+          <label for="id_last_name">Last Name</label>
+          <input type="text" name="last_name" id="id_last_name" class="form-control"
+                 placeholder="Last name" value="{{ form.last_name.value|default_if_none:'' }}" required>
+          {% if form.last_name.errors %}<div class="form-error">{{ form.last_name.errors.0 }}</div>{% endif %}
+        </div>
+      </div>
+
+      <div class="form-row">
+        <div class="form-group">
+          <label for="id_email">Email Address</label>
+          <input type="email" name="email" id="id_email" class="form-control"
+                 placeholder="you@email.com" value="{{ form.email.value|default_if_none:'' }}" required>
+          {% if form.email.errors %}<div class="form-error">{{ form.email.errors.0 }}</div>{% endif %}
+        </div>
+        <div class="form-group">
+          <label for="id_phone">Phone Number</label>
+          <input type="tel" name="phone" id="id_phone" class="form-control"
+                 placeholder="+91 XXXXX XXXXX" value="{{ form.phone.value|default_if_none:'' }}">
+          {% if form.phone.errors %}<div class="form-error">{{ form.phone.errors.0 }}</div>{% endif %}
+        </div>
+      </div>
+
+      <div class="form-row">
+        <div class="form-group">
+          <label for="id_city">City</label>
+          <input type="text" name="city" id="id_city" class="form-control"
+                 placeholder="Your city" value="{{ form.city.value|default_if_none:'' }}">
+          {% if form.city.errors %}<div class="form-error">{{ form.city.errors.0 }}</div>{% endif %}
+        </div>
+        <div class="form-group">
+          <label for="id_country">Country</label>
+          <input type="text" name="country" id="id_country" class="form-control"
+                 placeholder="Your country" value="{{ form.country.value|default_if_none:'' }}">
+          {% if form.country.errors %}<div class="form-error">{{ form.country.errors.0 }}</div>{% endif %}
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label for="id_username">Username</label>
+        <input type="text" name="username" id="id_username" class="form-control"
+               placeholder="Choose a username" value="{{ form.username.value|default_if_none:'' }}" required>
+        {% if form.username.errors %}<div class="form-error">{{ form.username.errors.0 }}</div>{% endif %}
+      </div>
+
+      <div class="form-row">
+        <div class="form-group">
+          <label for="id_password1">Password</label>
+          <input type="password" name="password1" id="id_password1" class="form-control"
+                 placeholder="Create a password" required>
+          {% if form.password1.errors %}<div class="form-error">{{ form.password1.errors.0 }}</div>{% endif %}
+        </div>
+        <div class="form-group">
+          <label for="id_password2">Confirm Password</label>
+          <input type="password" name="password2" id="id_password2" class="form-control"
+                 placeholder="Confirm password" required>
+          {% if form.password2.errors %}<div class="form-error">{{ form.password2.errors.0 }}</div>{% endif %}
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label for="id_bio">Additional Information</label>
+        <textarea name="bio" id="id_bio" class="form-control"
+                  placeholder="Tell us about yourself and your travel interests...">{{ form.bio.value|default_if_none:'' }}</textarea>
+      </div>
+
+      <button type="submit" class="btn btn-primary btn-block btn-lg" id="registerButton">Register User</button>
+    </form>
+
+    <div class="auth-footer">
+      Already have an account? <a href="{% url 'login' %}">Login here</a>
+    </div>
+  </div>
+</div>
+{% endblock %}
