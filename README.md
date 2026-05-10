@@ -1,4 +1,4 @@
-# Traveloop
+<img width="411" height="701" alt="image" src="https://github.com/user-attachments/assets/398517ef-99f5-4817-855d-8ed15bc32f86" /><img width="494" height="221" alt="image" src="https://github.com/user-attachments/assets/75307d1c-3919-4238-a66a-d3b8a5aab817" /># Traveloop
 
 Traveloop is an interactive, modern web application designed to help users plan trips, discover local activities, and organize their travel notes effortlessly. Built with **Django**, Traveloop provides a premium, responsive experience utilizing glassmorphism design aesthetics, interactive destination slideshows, and smooth micro-animations.
 
@@ -9,7 +9,28 @@ Traveloop is an interactive, modern web application designed to help users plan 
 ---
 
 ## Screenshots
-
+<img width="1903" height="863" alt="image" src="https://github.com/user-attachments/assets/10ef9b3b-c5bc-46c1-9436-c175c9766ca8" />
+<img width="1903" height="863" alt="image" src="https://github.com/user-attachments/assets/4e833aad-474f-4007-86a8-583b1d3d74b9" />
+<img width="1901" height="861" alt="image" src="https://github.com/user-attachments/assets/0a0efc07-f1d1-438b-b93e-8ceeaf247e8d" />
+<img width="1901" height="772" alt="image" src="https://github.com/user-attachments/assets/f62b17e0-ed41-4ee2-8b41-ba1312e82e34" />
+<img width="1902" height="697" alt="image" src="https://github.com/user-attachments/assets/697623e8-74e1-4b5e-95ee-2f0c71d3fea8" />
+<img width="659" height="776" alt="image" src="https://github.com/user-attachments/assets/1b66c943-139a-439e-97fa-59d1a1e3be08" />
+<img width="1896" height="789" alt="image" src="https://github.com/user-attachments/assets/9e45a9b2-8db7-4ff5-af57-1cf03bff81be" />
+<img width="1899" height="856" alt="image" src="https://github.com/user-attachments/assets/52fbae84-2373-41c0-b65c-d96c75286b26" />
+<img width="1904" height="867" alt="image" src="https://github.com/user-attachments/assets/065dad10-a8b5-4acd-b07f-16ed9925de21" />
+<img width="1910" height="751" alt="image" src="https://github.com/user-attachments/assets/2f3597b9-2df7-4fcc-a78b-31c5218ce655" />
+<img width="1894" height="864" alt="image" src="https://github.com/user-attachments/assets/3a9acf69-28a6-4a2c-8761-43a78790902f" />
+<img width="1115" height="632" alt="image" src="https://github.com/user-attachments/assets/3b9750a3-4fc2-420a-aec9-cdd062eb201c" />
+<img width="1899" height="857" alt="image" src="https://github.com/user-attachments/assets/187d6b3f-c00c-4b51-bd5b-c6a15ea56841" />
+<img width="1898" height="833" alt="image" src="https://github.com/user-attachments/assets/ba3035cb-941e-4a9f-a5ec-e4765935ab48" />
+<img width="1896" height="843" alt="image" src="https://github.com/user-attachments/assets/10fd6ba0-eca4-408e-9184-3d58d94f14ea" />
+<img width="878" height="869" alt="image" src="https://github.com/user-attachments/assets/5867248d-2475-46e3-8b7f-d5b7f6c21e2d" />
+<img width="916" height="853" alt="image" src="https://github.com/user-attachments/assets/baa2360a-e184-4210-b4c3-8be0b58421b5" />
+<img width="1919" height="866" alt="image" src="https://github.com/user-attachments/assets/c01ba595-5b10-4016-b5ea-3b12c353a690" />
+<img width="1117" height="677" alt="image" src="https://github.com/user-attachments/assets/661c54ac-f60a-4cab-96a2-1f8442461eae" />
+<img width="953" height="668" alt="image" src="https://github.com/user-attachments/assets/2fcad94b-e0b0-49e1-9643-9aa9c8d6aa53" />
+<img width="871" height="831" alt="image" src="https://github.com/user-attachments/assets/51b723ea-c3de-45f5-b559-2cb531a70c52" />
+<img width="410" height="685" alt="image" src="https://github.com/user-attachments/assets/97e6e04f-5e42-4982-be24-c1238bc34c13" />
 *(Add screenshots of your application here)*
 
 ### Dashboard
