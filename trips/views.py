@@ -1,12 +1,15 @@
-from django.shortcuts import render, redirect, get_object_or_404
-from django.contrib.auth.decorators import login_required
+from decimal import Decimal
+
 from django.contrib import messages
+from django.contrib.auth.decorators import login_required
 from django.http import JsonResponse
+from django.shortcuts import get_object_or_404, redirect, render
 from django.utils import timezone
 
-from .models import Trip, Stop, StopActivity
-from .forms import TripForm, StopForm
-from destinations.models import City, Activity
+from destinations.models import Activity, City
+
+from .forms import StopForm, TripForm
+from .models import Stop, StopActivity, Trip
 
 
 @login_required
@@ -138,9 +141,63 @@ def trip_detail_view(request, trip_id):
     """Screen 6 detail: View a single trip overview."""
     trip = get_object_or_404(Trip, id=trip_id, user=request.user)
     stops = trip.stops.select_related('city').prefetch_related('stop_activities__activity')
+
+    stay_rate = trip.accommodation_per_day or Decimal('0.00')
+    transport_rate = trip.transport_per_day or Decimal('0.00')
+    meal_rate = Decimal('25.00')
+
+    total_stay = Decimal('0.00')
+    total_activities = Decimal('0.00')
+    total_meals = Decimal('0.00')
+    total_transport = Decimal('0.00')
+    total_days = 0
+    per_stop = []
+
+    for stop in stops:
+        nights = max((stop.departure_date - stop.arrival_date).days, 1)
+        total_days += nights
+
+        stay_cost = stay_rate * Decimal(nights)
+        activities_cost = sum((sa.activity.estimated_cost or Decimal('0.00')) for sa in stop.stop_activities.all())
+        meals_cost = meal_rate * Decimal(nights)
+        transport_cost = transport_rate * Decimal(nights)
+
+        total_stay += stay_cost
+        total_activities += Decimal(activities_cost)
+        total_meals += meals_cost
+        total_transport += transport_cost
+
+        per_stop.append({
+            'stop': stop,
+            'nights': nights,
+            'stay_cost': stay_cost,
+            'activities_cost': Decimal(activities_cost),
+            'meals_cost': meals_cost,
+            'transport_cost': transport_cost,
+            'total_cost': stay_cost + Decimal(activities_cost) + meals_cost + transport_cost,
+        })
+
+    trip_total = total_stay + total_activities + total_meals + total_transport
+    avg_per_day = (trip_total / Decimal(total_days)) if total_days > 0 else trip_total
+    over_budget_threshold = avg_per_day * Decimal('1.5') if total_days > 0 else trip_total
+    over_budget_stops = [item for item in per_stop if item['total_cost'] > over_budget_threshold]
+
     return render(request, 'trips/trip_detail.html', {
         'trip': trip,
         'stops': stops,
+        'budget_summary': {
+            'stay_rate': stay_rate,
+            'transport_rate': transport_rate,
+            'meal_rate': meal_rate,
+            'total_stay': total_stay,
+            'total_activities': total_activities,
+            'total_meals': total_meals,
+            'total_transport': total_transport,
+            'trip_total': trip_total,
+            'avg_per_day': avg_per_day,
+            'per_stop': per_stop,
+            'over_budget_stops': over_budget_stops,
+        },
     })
 
 
@@ -163,4 +220,3 @@ def explore_view(request):
         'trips': trips,
         'query': query,
     })
-

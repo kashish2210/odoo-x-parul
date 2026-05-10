@@ -11,6 +11,7 @@ class Trip(models.Model):
     end_date = models.DateField()
     is_public = models.BooleanField(default=False)
     accommodation_per_day = models.DecimalField(max_digits=10, decimal_places=2, default=0)
+    transport_per_day = models.DecimalField(max_digits=10, decimal_places=2, default=0)
 
     class Meta:
         ordering = ['-start_date', '-id']

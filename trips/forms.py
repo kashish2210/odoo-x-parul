@@ -7,7 +7,7 @@ class TripForm(forms.ModelForm):
     """Form for creating/editing a trip."""
     class Meta:
         model = Trip
-        fields = ['name', 'description', 'cover_photo', 'start_date', 'end_date', 'is_public']
+        fields = ['name', 'description', 'cover_photo', 'start_date', 'end_date', 'accommodation_per_day', 'transport_per_day', 'is_public']
         widgets = {
             'name': forms.TextInput(attrs={
                 'class': 'form-control',
@@ -28,6 +28,18 @@ class TripForm(forms.ModelForm):
             }),
             'cover_photo': forms.ClearableFileInput(attrs={
                 'class': 'form-control',
+            }),
+            'accommodation_per_day': forms.NumberInput(attrs={
+                'class': 'form-control',
+                'min': '0',
+                'step': '0.01',
+                'placeholder': 'e.g. 120.00',
+            }),
+            'transport_per_day': forms.NumberInput(attrs={
+                'class': 'form-control',
+                'min': '0',
+                'step': '0.01',
+                'placeholder': 'e.g. 35.00',
             }),
             'is_public': forms.CheckboxInput(attrs={
                 'class': 'form-check',

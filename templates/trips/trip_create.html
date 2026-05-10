@@ -66,6 +66,25 @@
         {{ form.cover_photo }}
       </div>
 
+      <div class="form-row">
+        <div class="form-group">
+          <label for="{{ form.accommodation_per_day.id_for_label }}">
+            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 21V8a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2v13"/><path d="M21 21H3"/><path d="M7 21v-8h10v8"/></svg>
+            Stay cost per day
+          </label>
+          {{ form.accommodation_per_day }}
+          {% for error in form.accommodation_per_day.errors %}<p class="form-error">{{ error }}</p>{% endfor %}
+        </div>
+        <div class="form-group">
+          <label for="{{ form.transport_per_day.id_for_label }}">
+            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 17h18"/><path d="M5 17V8h14v9"/><path d="M7 17v2"/><path d="M17 17v2"/><circle cx="7" cy="17" r="2"/><circle cx="17" cy="17" r="2"/></svg>
+            Transport cost per day
+          </label>
+          {{ form.transport_per_day }}
+          {% for error in form.transport_per_day.errors %}<p class="form-error">{{ error }}</p>{% endfor %}
+        </div>
+      </div>
+
       <div class="form-group form-check-group">
         <label class="check-label">
           {{ form.is_public }}

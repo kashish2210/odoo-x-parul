@@ -43,9 +43,82 @@
   <div class="empty-state-inline"><p>No stops added yet.</p></div>
   {% endfor %}
 
+  <div class="section-header" style="margin-top:2rem;"><h2>Budget Summary</h2><div class="line"></div></div>
+  <div style="display:grid;grid-template-columns:1fr 320px;gap:1rem;align-items:start;">
+    <div style="background:var(--bg-card);border:var(--border-light);border-radius:var(--radius);padding:1rem;box-shadow:var(--shadow-sketch);">
+      <h3 style="margin-bottom:0.5rem;">Estimated total: {{ budget_summary.trip_total }}</h3>
+      <div style="display:flex;gap:0.5rem;flex-wrap:wrap;margin-bottom:0.8rem;">
+        <span class="meta-chip">Stay: {{ budget_summary.total_stay }}</span>
+        <span class="meta-chip">Activities: {{ budget_summary.total_activities }}</span>
+        <span class="meta-chip">Meals: {{ budget_summary.total_meals }}</span>
+        <span class="meta-chip">Transport: {{ budget_summary.total_transport }}</span>
+      </div>
+      <div style="display:flex;gap:0.5rem;flex-wrap:wrap;margin-bottom:0.8rem;">
+        <span class="meta-chip">Stay/day: {{ budget_summary.stay_rate }}</span>
+        <span class="meta-chip">Transport/day: {{ budget_summary.transport_rate }}</span>
+        <span class="meta-chip">Meals/day: {{ budget_summary.meal_rate }}</span>
+      </div>
+      <p style="color:var(--text-secondary);margin-bottom:0.8rem;">Average cost per day: <strong>{{ budget_summary.avg_per_day|floatformat:2 }}</strong></p>
+
+      {% if budget_summary.over_budget_stops %}
+      <div style="padding:0.75rem;border:1px solid rgba(231,76,60,0.2);border-radius:var(--radius);background:rgba(231,76,60,0.06);">
+        <strong style="color:var(--danger);">Over budget alerts</strong>
+        <ul style="margin-top:0.5rem;padding-left:1.2rem;color:var(--text-secondary);">
+          {% for item in budget_summary.over_budget_stops %}
+          <li>{{ item.stop.city.name }} — {{ item.total_cost }}</li>
+          {% endfor %}
+        </ul>
+      </div>
+      {% endif %}
+    </div>
+
+    <div style="background:var(--bg-card);border:var(--border-light);border-radius:var(--radius);padding:1rem;box-shadow:var(--shadow-sketch);">
+      <canvas id="budgetChart" width="300" height="300" data-stay="{{ budget_summary.total_stay }}" data-activities="{{ budget_summary.total_activities }}" data-meals="{{ budget_summary.total_meals }}" data-transport="{{ budget_summary.total_transport }}"></canvas>
+    </div>
+  </div>
+
   <div style="display:flex;gap:1rem;margin-top:2rem;flex-wrap:wrap;">
     <a href="{% url 'trip_itinerary' trip_id=trip.id %}" class="btn btn-primary">Edit Itinerary</a>
     <a href="{% url 'trip_list' %}" class="btn btn-outline">Back to Trips</a>
   </div>
 </div>
+{% endblock %}
+
+{% block extra_js %}
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+  document.addEventListener('DOMContentLoaded', function () {
+    const canvas = document.getElementById('budgetChart');
+    if (!canvas || typeof Chart === 'undefined') return;
+
+    const stay = parseFloat(canvas.dataset.stay) || 0;
+    const activities = parseFloat(canvas.dataset.activities) || 0;
+    const meals = parseFloat(canvas.dataset.meals) || 0;
+    const transport = parseFloat(canvas.dataset.transport) || 0;
+
+    new Chart(canvas.getContext('2d'), {
+      type: 'pie',
+      data: {
+        labels: ['Stay', 'Activities', 'Meals', 'Transport'],
+        datasets: [{
+          data: [stay, activities, meals, transport],
+          backgroundColor: [
+            'rgba(232, 115, 74, 0.95)',
+            'rgba(54, 162, 235, 0.9)',
+            'rgba(255, 206, 86, 0.9)',
+            'rgba(153, 102, 255, 0.9)'
+          ]
+        }]
+      },
+      options: {
+        responsive: true,
+        plugins: {
+          legend: {
+            position: 'bottom'
+          }
+        }
+      }
+    });
+  });
+</script>
 {% endblock %}
