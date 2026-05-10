@@ -1,4 +1,4 @@
-<img width="411" height="701" alt="image" src="https://github.com/user-attachments/assets/398517ef-99f5-4817-855d-8ed15bc32f86" /><img width="494" height="221" alt="image" src="https://github.com/user-attachments/assets/75307d1c-3919-4238-a66a-d3b8a5aab817" /># Traveloop
+# Traveloop
 
 Traveloop is an interactive, modern web application designed to help users plan trips, discover local activities, and organize their travel notes effortlessly. Built with **Django**, Traveloop provides a premium, responsive experience utilizing glassmorphism design aesthetics, interactive destination slideshows, and smooth micro-animations.
 
@@ -10,7 +10,7 @@ Traveloop is an interactive, modern web application designed to help users plan 
 
 ## Screenshots
 <img width="1903" height="863" alt="image" src="https://github.com/user-attachments/assets/10ef9b3b-c5bc-46c1-9436-c175c9766ca8" />
-<img width="1903" height="863" alt="image" src="https://github.com/user-attachments/assets/4e833aad-474f-4007-86a8-583b1d3d74b9" />
+<img width="411" height="701" alt="image" src="https://github.com/user-attachments/assets/398517ef-99f5-4817-855d-8ed15bc32f86" />
 <img width="1901" height="861" alt="image" src="https://github.com/user-attachments/assets/0a0efc07-f1d1-438b-b93e-8ceeaf247e8d" />
 <img width="1901" height="772" alt="image" src="https://github.com/user-attachments/assets/f62b17e0-ed41-4ee2-8b41-ba1312e82e34" />
 <img width="1902" height="697" alt="image" src="https://github.com/user-attachments/assets/697623e8-74e1-4b5e-95ee-2f0c71d3fea8" />
