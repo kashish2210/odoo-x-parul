@@ -8,8 +8,6 @@ class City(models.Model):
     cost_index = models.DecimalField(max_digits=6, decimal_places=2, default=0)
     popularity_score = models.IntegerField(default=0)
     description = models.TextField(blank=True)
-    latitude = models.DecimalField(max_digits=9, decimal_places=6, null=True, blank=True)
-    longitude = models.DecimalField(max_digits=9, decimal_places=6, null=True, blank=True)
 
     class Meta:
         ordering = ['-popularity_score', 'name']
@@ -40,7 +38,6 @@ class Activity(models.Model):
     city = models.ForeignKey(City, on_delete=models.CASCADE, related_name='activities')
     name = models.CharField(max_length=150)
     description = models.TextField(blank=True)
-    image = models.ImageField(upload_to='activities/', blank=True, null=True)
     category = models.CharField(max_length=20, choices=CATEGORY_CHOICES, default=CATEGORY_OTHER)
     estimated_cost = models.DecimalField(max_digits=10, decimal_places=2, default=0)
     duration_minutes = models.IntegerField(default=60)

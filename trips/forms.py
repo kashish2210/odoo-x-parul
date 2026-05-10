@@ -84,10 +84,6 @@ class StopForm(forms.Form):
 
     def get_or_create_city(self):
         """Find existing city or create a new one automatically."""
-        import urllib.request
-        import urllib.parse
-        import json
-
         name = self.cleaned_data['city_name'].strip().title()
         country = self.cleaned_data['country'].strip().title()
         city, created = City.objects.get_or_create(
@@ -99,25 +95,8 @@ class StopForm(forms.Form):
                 'popularity_score': 0,
             }
         )
-
         if not created:
             # Bump popularity every time someone adds this city to a trip
             city.popularity_score += 1
             city.save(update_fields=['popularity_score'])
-
-        # Fetch coordinates if they are missing
-        if city.latitude is None or city.longitude is None:
-            try:
-                query = urllib.parse.quote(f"{name}, {country}")
-                url = f"https://nominatim.openstreetmap.org/search?format=json&q={query}&limit=1"
-                req = urllib.request.Request(url, headers={'User-Agent': 'Traveloop/1.0'})
-                with urllib.request.urlopen(req, timeout=5) as response:
-                    data = json.loads(response.read().decode('utf-8'))
-                    if data:
-                        city.latitude = data[0]['lat']
-                        city.longitude = data[0]['lon']
-                        city.save(update_fields=['latitude', 'longitude'])
-            except Exception:
-                pass # If it fails, just ignore and leave as null
-
         return city
