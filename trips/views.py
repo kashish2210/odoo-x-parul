@@ -2,6 +2,7 @@ from decimal import Decimal
 
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
+from django.db.models import Q
 from django.http import JsonResponse
 from django.shortcuts import get_object_or_404, redirect, render
 from django.utils import timezone
@@ -18,21 +19,38 @@ def trip_list_view(request):
     today = timezone.now().date()
     user_trips = Trip.objects.filter(user=request.user)
 
+    query = request.GET.get('q', '')
+    sort_by = request.GET.get('sort', 'recent')
+    filter_by = request.GET.get('filter', '')
+
+    if query:
+        user_trips = user_trips.filter(
+            Q(name__icontains=query) | Q(description__icontains=query)
+        )
+
+    sort_map = {
+        'recent': '-start_date',
+        'oldest': 'start_date',
+        'name': 'name',
+    }
+    user_trips = user_trips.order_by(sort_map.get(sort_by, '-start_date'))
+
+    if filter_by == 'public':
+        user_trips = user_trips.filter(is_public=True)
+    elif filter_by == 'private':
+        user_trips = user_trips.filter(is_public=False)
+
     ongoing = user_trips.filter(start_date__lte=today, end_date__gte=today)
     upcoming = user_trips.filter(start_date__gt=today)
     completed = user_trips.filter(end_date__lt=today)
-
-    query = request.GET.get('q', '')
-    if query:
-        ongoing = ongoing.filter(name__icontains=query)
-        upcoming = upcoming.filter(name__icontains=query)
-        completed = completed.filter(name__icontains=query)
 
     return render(request, 'trips/trip_list.html', {
         'ongoing': ongoing,
         'upcoming': upcoming,
         'completed': completed,
         'query': query,
+        'sort_by': sort_by,
+        'filter_by': filter_by,
     })
 
 
@@ -204,9 +222,25 @@ def trip_detail_view(request, trip_id):
     over_budget_threshold = avg_per_day * Decimal('1.5') if total_days > 0 else trip_total
     over_budget_stops = [item for item in per_stop if item['total_cost'] > over_budget_threshold]
 
+    # Build map data
+    import json
+    map_points = []
+    for stop in stops:
+        city = stop.city
+        if city.latitude and city.longitude:
+            map_points.append({
+                'name': city.name,
+                'country': city.country,
+                'lat': city.latitude,
+                'lng': city.longitude,
+                'arrival': stop.arrival_date.strftime('%b %d'),
+                'departure': stop.departure_date.strftime('%b %d'),
+            })
+
     return render(request, 'trips/trip_detail.html', {
         'trip': trip,
         'stops': stops,
+        'map_data': json.dumps(map_points),
         'budget_summary': {
             'stay_rate': stay_rate,
             'transport_rate': transport_rate,
@@ -226,21 +260,49 @@ def trip_detail_view(request, trip_id):
 @login_required
 def explore_view(request):
     """Explore page: public trips from everyone + your own trips."""
-    from django.db.models import Q
+    import json
     query = request.GET.get('q', '')
+    sort_by = request.GET.get('sort', 'recent')
 
     trips = Trip.objects.filter(
         Q(is_public=True) | Q(user=request.user)
-    ).select_related('user').distinct().order_by('-start_date')
+    ).select_related('user').distinct()
 
     if query:
         trips = trips.filter(
             Q(name__icontains=query) | Q(description__icontains=query)
         )
 
+    sort_map = {
+        'recent': '-start_date',
+        'oldest': 'start_date',
+        'name': 'name',
+    }
+    trips = trips.order_by(sort_map.get(sort_by, '-start_date'))
+
+    # Build map data from all stops of visible trips
+    all_stops = Stop.objects.filter(
+        trip__in=trips
+    ).select_related('city', 'trip')
+    map_points = []
+    seen = set()
+    for stop in all_stops:
+        city = stop.city
+        if city.latitude and city.longitude and city.id not in seen:
+            seen.add(city.id)
+            map_points.append({
+                'name': city.name,
+                'country': city.country,
+                'lat': city.latitude,
+                'lng': city.longitude,
+                'trips': stop.trip.name,
+            })
+
     return render(request, 'trips/explore.html', {
         'trips': trips,
         'query': query,
+        'sort_by': sort_by,
+        'map_data': json.dumps(map_points),
     })
 
 

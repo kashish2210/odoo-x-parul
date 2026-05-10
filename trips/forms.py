@@ -107,11 +107,36 @@ class StopForm(forms.Form):
                 'popularity_score': 0,
             }
         )
-        if not created:
+        if created:
+            # Auto-geocode the new city
+            self._geocode_city(city)
+        else:
             # Bump popularity every time someone adds this city to a trip
             city.popularity_score += 1
             city.save(update_fields=['popularity_score'])
         return city
+
+    @staticmethod
+    def _geocode_city(city):
+        """Geocode a city using Nominatim (best effort, non-blocking)."""
+        import urllib.request
+        import urllib.parse
+        import json
+
+        try:
+            query = f"{city.name}, {city.country}"
+            url = f"https://nominatim.openstreetmap.org/search?q={urllib.parse.quote(query)}&format=json&limit=1"
+            req = urllib.request.Request(url, headers={
+                'User-Agent': 'Traveloop/1.0 (student project)'
+            })
+            with urllib.request.urlopen(req, timeout=5) as resp:
+                data = json.loads(resp.read().decode())
+            if data:
+                city.latitude = float(data[0]['lat'])
+                city.longitude = float(data[0]['lon'])
+                city.save(update_fields=['latitude', 'longitude'])
+        except Exception:
+            pass  # Geocoding is best-effort; don't block the user
 
 
 class StopEditForm(forms.ModelForm):

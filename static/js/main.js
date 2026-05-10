@@ -4,7 +4,18 @@ document.addEventListener('DOMContentLoaded', () => {
   initTheme();
   initMobileMenu();
   initAutoMessages();
+  initFilterDropdowns();
 });
+
+// ---------- FILTER DROPDOWNS ----------
+function initFilterDropdowns() {
+  // Close all open dropdowns when clicking outside
+  document.addEventListener('click', (e) => {
+    if (!e.target.closest('.filter-btn') && !e.target.closest('.filter-dropdown')) {
+      document.querySelectorAll('.filter-dropdown.show').forEach(d => d.classList.remove('show'));
+    }
+  });
+}
 
 // ---------- THEME TOGGLE ----------
 function initTheme() {

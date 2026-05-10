@@ -19,12 +19,31 @@
         </svg>
       </span>
       <input type="text" id="notesSearchInput" class="notes-search-input"
-             placeholder="Search bar ......" value="{{ query }}"
+             placeholder="Search notes..." value="{{ query }}"
              autocomplete="off" aria-label="Search notes by title or content">
     </div>
-    <button class="btn btn-outline filter-btn" id="groupByBtn">Group by</button>
-    <button class="btn btn-outline filter-btn" id="filterBtn">Filter</button>
-    <button class="btn btn-outline filter-btn" id="sortByBtn">Sort by...</button>
+    <div style="position:relative;display:inline-block;">
+      <button class="btn btn-outline filter-btn {% if group_by != 'all' %}active{% endif %}" type="button" onclick="this.nextElementSibling.classList.toggle('show')" id="groupByBtn">
+        Group{% if group_by != 'all' %}: {{ group_by|title }}{% endif %}
+        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="6 9 12 15 18 9"/></svg>
+      </button>
+      <div class="filter-dropdown">
+        <a href="?trip={{ trip_id }}&q={{ query }}&sort={{ sort_by }}&group=all" class="filter-dropdown-item {% if group_by == 'all' %}active{% endif %}">All Notes</a>
+        <a href="?trip={{ trip_id }}&q={{ query }}&sort={{ sort_by }}&group=day" class="filter-dropdown-item {% if group_by == 'day' %}active{% endif %}">Has Day Label</a>
+        <a href="?trip={{ trip_id }}&q={{ query }}&sort={{ sort_by }}&group=stop" class="filter-dropdown-item {% if group_by == 'stop' %}active{% endif %}">Has Stop</a>
+      </div>
+    </div>
+    <div style="position:relative;display:inline-block;">
+      <button class="btn btn-outline filter-btn" type="button" onclick="this.nextElementSibling.classList.toggle('show')" id="sortByBtn">
+        Sort{% if sort_by != 'newest' %}: {{ sort_by|title }}{% endif %}
+        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="6 9 12 15 18 9"/></svg>
+      </button>
+      <div class="filter-dropdown">
+        <a href="?trip={{ trip_id }}&q={{ query }}&group={{ group_by }}&sort=newest" class="filter-dropdown-item {% if sort_by == 'newest' %}active{% endif %}">Newest First</a>
+        <a href="?trip={{ trip_id }}&q={{ query }}&group={{ group_by }}&sort=oldest" class="filter-dropdown-item {% if sort_by == 'oldest' %}active{% endif %}">Oldest First</a>
+        <a href="?trip={{ trip_id }}&q={{ query }}&group={{ group_by }}&sort=title" class="filter-dropdown-item {% if sort_by == 'title' %}active{% endif %}">Title (A-Z)</a>
+      </div>
+    </div>
   </div>
 
   <h1 class="notes-page-title">Trip Notes</h1>

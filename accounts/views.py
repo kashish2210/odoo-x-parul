@@ -70,15 +70,51 @@ def dashboard_view(request):
     """Main dashboard after login — shows real trips and notes summary."""
     from trips.models import Trip
     from notes.models import Note
+    from django.db.models import Q
 
-    trips = Trip.objects.filter(user=request.user).order_by('-start_date')[:6]
+    query = request.GET.get('q', '').strip()
+    sort_by = request.GET.get('sort', 'recent')
+    group_by = request.GET.get('group', 'all')
+
+    trips = Trip.objects.filter(user=request.user)
+    notes_qs = Note.objects.filter(user=request.user).select_related('trip')
+
+    if query:
+        trips = trips.filter(
+            Q(name__icontains=query) | Q(description__icontains=query)
+        )
+        notes_qs = notes_qs.filter(
+            Q(title__icontains=query) | Q(content__icontains=query)
+        )
+
+    # Sort
+    sort_map = {
+        'recent': '-start_date',
+        'oldest': 'start_date',
+        'name': 'name',
+    }
+    trips = trips.order_by(sort_map.get(sort_by, '-start_date'))
+
+    # Group filter
+    from django.utils import timezone
+    today = timezone.now().date()
+    if group_by == 'ongoing':
+        trips = trips.filter(start_date__lte=today, end_date__gte=today)
+    elif group_by == 'upcoming':
+        trips = trips.filter(start_date__gt=today)
+    elif group_by == 'completed':
+        trips = trips.filter(end_date__lt=today)
+
     notes_count = Note.objects.filter(user=request.user).count()
-    recent_notes = Note.objects.filter(user=request.user).select_related('trip')[:3]
+    recent_notes = notes_qs[:3]
 
     return render(request, 'accounts/dashboard.html', {
-        'trips': trips,
+        'trips': trips[:6],
         'notes_count': notes_count,
         'recent_notes': recent_notes,
+        'query': query,
+        'sort_by': sort_by,
+        'group_by': group_by,
     })
 
 @login_required
@@ -119,8 +155,28 @@ import json
 
 
 @staff_member_required
+def admin_panel_login_view(request):
+    """Password prompt for admin panel."""
+    if request.session.get('admin_panel_unlocked'):
+        return redirect('admin_panel')
+        
+    if request.method == 'POST':
+        password = request.POST.get('admin_password')
+        if password == '1000':
+            request.session['admin_panel_unlocked'] = True
+            messages.success(request, 'Admin panel unlocked.')
+            return redirect('admin_panel')
+        else:
+            messages.error(request, 'Incorrect password.')
+            
+    return render(request, 'accounts/admin_login.html')
+
+
+@staff_member_required
 def admin_panel_view(request):
     """Custom admin panel — Screen 12 from wireframe."""
+    if not request.session.get('admin_panel_unlocked'):
+        return redirect('admin_panel_login')
     from trips.models import Trip, Stop
     from destinations.models import City, Activity
     from community.models import CommunityPost
@@ -225,4 +281,25 @@ def admin_panel_view(request):
         context['city_bar_data'] = json.dumps([c.visits for c in top_cities])
 
     return render(request, 'accounts/admin_panel.html', context)
+
+
+# ── STATIC / FOOTER PAGES ──
+
+def about_view(request):
+    return render(request, 'accounts/static_pages/about.html')
+
+def contact_view(request):
+    return render(request, 'accounts/static_pages/contact.html')
+
+def careers_view(request):
+    return render(request, 'accounts/static_pages/careers.html')
+
+def help_view(request):
+    return render(request, 'accounts/static_pages/help.html')
+
+def privacy_view(request):
+    return render(request, 'accounts/static_pages/privacy.html')
+
+def terms_view(request):
+    return render(request, 'accounts/static_pages/terms.html')
 

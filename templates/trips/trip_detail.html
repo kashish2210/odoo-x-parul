@@ -1,5 +1,34 @@
 {% extends 'base.html' %}
 {% block title %}{{ trip.name }} — Traveloop{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+<style>
+  .trip-route-map {
+    width: 100%;
+    height: 350px;
+    border: var(--border-sketch);
+    border-radius: var(--radius);
+    box-shadow: var(--shadow-sketch);
+    margin-bottom: 2rem;
+    z-index: 1;
+  }
+  [data-theme="dark"] .trip-route-map {
+    filter: brightness(0.8) contrast(1.1) saturate(0.8);
+  }
+  .map-popup-title {
+    font-family: 'Caveat', cursive;
+    font-size: 1.3rem;
+    font-weight: 700;
+    margin-bottom: 2px;
+  }
+  .map-popup-sub {
+    font-size: 0.8rem;
+    color: #666;
+  }
+</style>
+{% endblock %}
+
 {% block content %}
 <div class="page-container">
   <div class="page-header">
@@ -9,6 +38,10 @@
   {% if trip.description %}
   <p style="color:var(--text-secondary);margin-bottom:2rem;">{{ trip.description }}</p>
   {% endif %}
+
+  <!-- Interactive Route Map -->
+  <div class="section-header"><h2>Trip Route Map</h2><div class="line"></div></div>
+  <div id="tripRouteMap" class="trip-route-map"></div>
 
   <div class="section-header"><h2>Itinerary</h2><div class="line"></div></div>
   {% for stop in stops %}
@@ -86,39 +119,91 @@
 
 {% block extra_js %}
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 <script>
   document.addEventListener('DOMContentLoaded', function () {
+    // ─── BUDGET CHART ───
     const canvas = document.getElementById('budgetChart');
-    if (!canvas || typeof Chart === 'undefined') return;
+    if (canvas && typeof Chart !== 'undefined') {
+      const stay = parseFloat(canvas.dataset.stay) || 0;
+      const activities = parseFloat(canvas.dataset.activities) || 0;
+      const meals = parseFloat(canvas.dataset.meals) || 0;
+      const transport = parseFloat(canvas.dataset.transport) || 0;
 
-    const stay = parseFloat(canvas.dataset.stay) || 0;
-    const activities = parseFloat(canvas.dataset.activities) || 0;
-    const meals = parseFloat(canvas.dataset.meals) || 0;
-    const transport = parseFloat(canvas.dataset.transport) || 0;
-
-    new Chart(canvas.getContext('2d'), {
-      type: 'pie',
-      data: {
-        labels: ['Stay', 'Activities', 'Meals', 'Transport'],
-        datasets: [{
-          data: [stay, activities, meals, transport],
-          backgroundColor: [
-            'rgba(232, 115, 74, 0.95)',
-            'rgba(54, 162, 235, 0.9)',
-            'rgba(255, 206, 86, 0.9)',
-            'rgba(153, 102, 255, 0.9)'
-          ]
-        }]
-      },
-      options: {
-        responsive: true,
-        plugins: {
-          legend: {
-            position: 'bottom'
+      new Chart(canvas.getContext('2d'), {
+        type: 'pie',
+        data: {
+          labels: ['Stay', 'Activities', 'Meals', 'Transport'],
+          datasets: [{
+            data: [stay, activities, meals, transport],
+            backgroundColor: [
+              'rgba(232, 115, 74, 0.95)',
+              'rgba(54, 162, 235, 0.9)',
+              'rgba(255, 206, 86, 0.9)',
+              'rgba(153, 102, 255, 0.9)'
+            ]
+          }]
+        },
+        options: {
+          responsive: true,
+          plugins: {
+            legend: {
+              position: 'bottom'
+            }
           }
         }
-      }
+      });
+    }
+
+    // ─── ROUTE MAP ───
+    const mapData = {{ map_data|safe }};
+    const mapEl = document.getElementById('tripRouteMap');
+    if (!mapEl || typeof L === 'undefined') return;
+
+    const map = L.map('tripRouteMap', { scrollWheelZoom: false }).setView([20, 0], 2);
+
+    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+      attribution: '&copy; OpenStreetMap contributors',
+      maxZoom: 18,
+    }).addTo(map);
+
+    const markerIcon = L.divIcon({
+      className: 'custom-map-marker',
+      html: '<svg width="28" height="36" viewBox="0 0 28 36"><path d="M14 0C6.27 0 0 6.27 0 14c0 10.5 14 22 14 22s14-11.5 14-22C28 6.27 21.73 0 14 0z" fill="#e8734a" stroke="#fff" stroke-width="2"/><circle cx="14" cy="13" r="5" fill="#fff"/></svg>',
+      iconSize: [28, 36],
+      iconAnchor: [14, 36],
+      popupAnchor: [0, -34],
     });
+
+    if (mapData.length > 0) {
+      const bounds = [];
+      const routeCoords = [];
+      mapData.forEach((point, idx) => {
+        const marker = L.marker([point.lat, point.lng], { icon: markerIcon }).addTo(map);
+        marker.bindPopup(`
+          <div class="map-popup-title">${idx + 1}. ${point.name}</div>
+          <div class="map-popup-sub">${point.country}</div>
+          <div class="map-popup-sub">${point.arrival} — ${point.departure}</div>
+        `);
+        bounds.push([point.lat, point.lng]);
+        routeCoords.push([point.lat, point.lng]);
+      });
+
+      // Draw route line
+      if (routeCoords.length > 1) {
+        L.polyline(routeCoords, {
+          color: '#e8734a',
+          weight: 3,
+          opacity: 0.7,
+          dashArray: '8, 8',
+          smoothFactor: 1,
+        }).addTo(map);
+      }
+
+      map.fitBounds(bounds, { padding: [40, 40], maxZoom: 8 });
+    }
+
+    setTimeout(() => map.invalidateSize(), 300);
   });
 </script>
 {% endblock %}

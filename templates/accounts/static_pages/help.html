@@ -1,0 +1,29 @@
+{% extends 'base.html' %}
+{% block title %}Help Center — Traveloop{% endblock %}
+
+{% block content %}
+<div class="page-container" style="max-width:800px;margin:2rem auto;padding:2rem;background:var(--bg-card);border:var(--border-sketch);border-radius:var(--radius);box-shadow:var(--shadow-sketch);">
+  <h1 style="font-family:'Caveat',cursive;font-size:3rem;color:var(--accent);margin-bottom:1.5rem;text-align:center;">Help Center</h1>
+  
+  <div style="font-size:1.05rem;line-height:1.7;color:var(--text-secondary);">
+    <p style="margin-bottom:2rem;text-align:center;">How can we help you today?</p>
+    
+    <div style="display:flex;flex-direction:column;gap:1.5rem;">
+      <div style="padding:1.5rem;border:var(--border-light);border-radius:var(--radius);background:var(--bg-secondary);">
+        <h4 style="color:var(--text-primary);margin-bottom:0.5rem;font-size:1.2rem;">How do I create a trip?</h4>
+        <p>Go to the "Create Trip" tab in your navigation menu. Enter your trip name, dates, cover photo, and the cities you plan to visit. It's that easy!</p>
+      </div>
+      
+      <div style="padding:1.5rem;border:var(--border-light);border-radius:var(--radius);background:var(--bg-secondary);">
+        <h4 style="color:var(--text-primary);margin-bottom:0.5rem;font-size:1.2rem;">How does the budget feature work?</h4>
+        <p>Inside any of your trips, click on "Billing" or the "Budget" section. You can set a total budget, log expenses, and instantly generate a downloadable invoice with tax and discount settings.</p>
+      </div>
+      
+      <div style="padding:1.5rem;border:var(--border-light);border-radius:var(--radius);background:var(--bg-secondary);">
+        <h4 style="color:var(--text-primary);margin-bottom:0.5rem;font-size:1.2rem;">Can I share my itinerary?</h4>
+        <p>Yes! In the Community tab, you can create a post and optionally link it to one of your existing trips so others can get inspired by your journey.</p>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}
