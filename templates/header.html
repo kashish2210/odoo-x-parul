@@ -11,6 +11,7 @@
     <li><a href="{% url 'trip_list' %}" class="{% if request.resolver_match.url_name == 'trip_list' %}active{% endif %}">My Trips</a></li>
     <li><a href="{% url 'trip_create' %}" class="{% if request.resolver_match.url_name == 'trip_create' %}active{% endif %}">Create Trip</a></li>
     <li><a href="{% url 'explore' %}" class="{% if request.resolver_match.url_name == 'explore' %}active{% endif %}">Explore</a></li>
+    <li><a href="{% url 'destinations:activity-search' %}" class="{% if request.resolver_match.url_name == 'activity-search' %}active{% endif %}">Browse Activities</a></li>
 
     {% endif %}
   </ul>
