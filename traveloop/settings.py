@@ -42,6 +42,7 @@ INSTALLED_APPS = [
     'trips',
     'checklists',
     'budget',
+    'notes',
 ]
 
 MIDDLEWARE = [

@@ -67,7 +67,17 @@ def logout_view(request):
 
 @login_required
 def dashboard_view(request):
-    """Main dashboard after login."""
+    """Main dashboard after login — shows real trips and notes summary."""
+    from trips.models import Trip
+    from notes.models import Note
+
+    trips = Trip.objects.filter(user=request.user).order_by('-start_date')[:6]
+    notes_count = Note.objects.filter(user=request.user).count()
+    recent_notes = Note.objects.filter(user=request.user).select_related('trip')[:3]
+
     return render(request, 'accounts/dashboard.html', {
-        'trips': [],  # Will be populated when trips feature is built
+        'trips': trips,
+        'notes_count': notes_count,
+        'recent_notes': recent_notes,
     })
+

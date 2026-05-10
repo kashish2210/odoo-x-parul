@@ -807,3 +807,25 @@ textarea.form-control {
   .auth-card { padding: 1.5rem; }
   .dash-welcome h1 { font-size: 2rem; }
 }
+
+/* ---------- DASHBOARD NOTES SECTION ---------- */
+.dash-notes-empty {
+  grid-column: 1 / -1;
+  display: flex;
+  align-items: center;
+  gap: 0.8rem;
+  padding: 1.2rem 1.5rem;
+  background: var(--bg-card);
+  border: var(--border-sketch);
+  border-radius: 10px;
+  box-shadow: var(--shadow-sketch);
+  color: var(--text-secondary);
+  font-size: 0.92rem;
+  margin-bottom: 2.5rem;
+}
+
+.dash-add-note-card .card-img {
+  color: var(--accent);
+  background: var(--accent-light);
+}
+
