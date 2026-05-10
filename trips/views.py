@@ -260,18 +260,25 @@ def trip_detail_view(request, trip_id):
 @login_required
 def explore_view(request):
     """Explore page: public trips from everyone + your own trips."""
-    from django.db.models import Q
     import json
     query = request.GET.get('q', '')
+    sort_by = request.GET.get('sort', 'recent')
 
     trips = Trip.objects.filter(
         Q(is_public=True) | Q(user=request.user)
-    ).select_related('user').distinct().order_by('-start_date')
+    ).select_related('user').distinct()
 
     if query:
         trips = trips.filter(
             Q(name__icontains=query) | Q(description__icontains=query)
         )
+
+    sort_map = {
+        'recent': '-start_date',
+        'oldest': 'start_date',
+        'name': 'name',
+    }
+    trips = trips.order_by(sort_map.get(sort_by, '-start_date'))
 
     # Build map data from all stops of visible trips
     all_stops = Stop.objects.filter(
@@ -294,6 +301,7 @@ def explore_view(request):
     return render(request, 'trips/explore.html', {
         'trips': trips,
         'query': query,
+        'sort_by': sort_by,
         'map_data': json.dumps(map_points),
     })
 

@@ -1218,3 +1218,59 @@ textarea.form-control {
   background: var(--accent-light);
 }
 
+/* ========== FILTER DROPDOWNS ========== */
+.filter-dropdown {
+  display: none;
+  position: absolute;
+  top: calc(100% + 6px);
+  left: 0;
+  min-width: 160px;
+  background: var(--bg-card);
+  border: var(--border-sketch);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow-sketch);
+  z-index: 100;
+  overflow: hidden;
+}
+.filter-dropdown.show {
+  display: block;
+  animation: dropdownFade 0.2s ease;
+}
+
+@keyframes dropdownFade {
+  from { opacity: 0; transform: translateY(-6px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+.filter-dropdown-item {
+  display: block;
+  padding: 0.55rem 1rem;
+  font-size: 0.85rem;
+  color: var(--text-secondary);
+  text-decoration: none;
+  transition: background 0.15s, color 0.15s;
+  border-bottom: 1px solid var(--bg-secondary);
+}
+.filter-dropdown-item:last-child {
+  border-bottom: none;
+}
+.filter-dropdown-item:hover {
+  background: var(--bg-secondary);
+  color: var(--text-primary);
+}
+.filter-dropdown-item.active {
+  background: var(--accent);
+  color: #fff;
+  font-weight: 600;
+}
+
+.filter-btn.active {
+  background: var(--accent);
+  color: #fff;
+  border-color: var(--accent);
+}
+.filter-btn svg {
+  vertical-align: middle;
+  margin-left: 4px;
+}
+

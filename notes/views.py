@@ -28,6 +28,15 @@ def notes_list(request):
             Q(title__icontains=query) | Q(content__icontains=query)
         )
 
+    # Sort
+    sort_by = request.GET.get('sort', 'newest')
+    sort_map = {
+        'newest': '-updated_at',
+        'oldest': 'updated_at',
+        'title': 'title',
+    }
+    notes = notes.order_by(sort_map.get(sort_by, '-updated_at'))
+
     # Group-by tab (client-side filtering; persisted in URL for page refresh)
     group_by = request.GET.get('group', 'all')
 
@@ -39,6 +48,7 @@ def notes_list(request):
         'trips': trips,
         'trip_id': trip_id,
         'query': query,
+        'sort_by': sort_by,
         'group_by': group_by,
         'form': form,
     })
