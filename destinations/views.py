@@ -1,7 +1,7 @@
 from django.contrib import messages
 from django.contrib.auth.mixins import LoginRequiredMixin
+from django.core.exceptions import PermissionDenied
 from django.db.models import Q
-from django.http import HttpResponseForbidden
 from django.shortcuts import get_object_or_404, redirect
 from django.urls import reverse_lazy
 from django.views.generic import ListView, View
@@ -11,6 +11,13 @@ from trips.models import Stop, StopActivity
 from .models import Activity
 
 
+def get_owned_stop_or_404(stop_id, user):
+    stop = get_object_or_404(Stop.objects.select_related('trip', 'city'), pk=stop_id)
+    if stop.trip.user_id != user.id:
+        raise PermissionDenied('You do not have permission to edit this stop.')
+    return stop
+
+
 class ActivitySearchView(LoginRequiredMixin, ListView):
     template_name = 'destinations/activity_search.html'
     context_object_name = 'activities'
@@ -18,7 +25,12 @@ class ActivitySearchView(LoginRequiredMixin, ListView):
     def get_queryset(self):
         queryset = Activity.objects.select_related('city').all()
         params = self.request.GET
-
+        # If a stop is provided, ensure the queryset is limited to that stop's city
+        stop_id = params.get('stop')
+        if stop_id:
+            # will raise PermissionDenied / 404 if the stop is invalid or not owned
+            selected_stop = get_owned_stop_or_404(stop_id, self.request.user)
+            queryset = queryset.filter(city_id=selected_stop.city_id)
         query = params.get('q', '').strip()
         if query:
             queryset = queryset.filter(
@@ -76,11 +88,7 @@ class ActivitySearchView(LoginRequiredMixin, ListView):
         selected_stop = None
 
         if stop_id:
-            selected_stop = get_object_or_404(
-                Stop.objects.select_related('trip', 'city'),
-                pk=stop_id,
-                trip__user=self.request.user,
-            )
+            selected_stop = get_owned_stop_or_404(stop_id, self.request.user)
 
         existing_activity_ids = set()
         if selected_stop:
@@ -91,6 +99,9 @@ class ActivitySearchView(LoginRequiredMixin, ListView):
         context['selected_stop'] = selected_stop
         context['selected_trip'] = selected_stop.trip if selected_stop else None
         context['existing_activity_ids'] = existing_activity_ids
+        # all stops belonging to the user for the stop selector dropdown
+        from trips.models import Stop
+        context['user_stops'] = Stop.objects.filter(trip__user=self.request.user).select_related('trip', 'city')
         context['filters'] = {
             'q': params.get('q', ''),
             'category': params.get('category', ''),
@@ -116,8 +127,12 @@ class ActivitySearchView(LoginRequiredMixin, ListView):
 
 class AddActivityToStopView(LoginRequiredMixin, View):
     def post(self, request):
-        stop = get_object_or_404(Stop, pk=request.POST.get('stop_id'), trip__user=request.user)
+        stop = get_owned_stop_or_404(request.POST.get('stop_id'), request.user)
         activity = get_object_or_404(Activity, pk=request.POST.get('activity_id'))
+        # Prevent adding activities that belong to a different city than the stop
+        if activity.city_id != stop.city_id:
+            messages.error(request, 'This activity does not belong to the selected stop city.')
+            return redirect(request.POST.get('next') or reverse_lazy('destinations:activity-search'))
 
         StopActivity.objects.get_or_create(stop=stop, activity=activity)
         messages.success(request, f'Added {activity.name} to {stop.city.name}.')
@@ -126,7 +141,7 @@ class AddActivityToStopView(LoginRequiredMixin, View):
 
 class RemoveActivityFromStopView(LoginRequiredMixin, View):
     def post(self, request):
-        stop = get_object_or_404(Stop, pk=request.POST.get('stop_id'), trip__user=request.user)
+        stop = get_owned_stop_or_404(request.POST.get('stop_id'), request.user)
         activity = get_object_or_404(Activity, pk=request.POST.get('activity_id'))
 
         deleted, _ = StopActivity.objects.filter(stop=stop, activity=activity).delete()

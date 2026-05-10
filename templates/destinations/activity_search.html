@@ -248,8 +248,27 @@
       {% endif %}
     </p>
 
+    {% if not selected_stop %}
+    <div style="display:flex;align-items:center;justify-content:space-between;gap:1rem;flex-wrap:wrap;margin-bottom:1rem;padding:0.9rem 1rem;border:var(--border-light);border-radius:var(--radius);background:var(--bg-secondary);">
+      <div>
+        <strong>Need a stop first?</strong>
+        <div style="color:var(--text-secondary);font-size:0.92rem;">Open one of your trips, then use the new Add activities button on a stop.</div>
+      </div>
+      <a href="{% url 'trip_list' %}" class="btn btn-outline btn-sm">Go to My Trips</a>
+    </div>
+    {% endif %}
+
     <form method="get" class="search-form">
       <input type="hidden" name="stop" value="{{ selected_stop.id|default_if_none:'' }}">
+      <div class="field-group">
+        <label for="stop">Stop</label>
+        <select id="stop" name="stop">
+          <option value="">All stops</option>
+          {% for stop in user_stops %}
+          <option value="{{ stop.id }}" {% if selected_stop and selected_stop.id == stop.id %}selected{% endif %}>{{ stop.trip.name }} — {{ stop.city.name }}, {{ stop.city.country }}</option>
+          {% endfor %}
+        </select>
+      </div>
       <div class="field-group full-span">
         <label for="q">Search</label>
         <input id="q" name="q" type="text" placeholder="Paragliding, food tour, museum..." value="{{ filters.q }}">
