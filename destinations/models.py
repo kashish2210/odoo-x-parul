@@ -4,8 +4,8 @@ from django.db import models
 class City(models.Model):
     name = models.CharField(max_length=100)
     country = models.CharField(max_length=100)
-    region = models.CharField(max_length=100)
-    cost_index = models.DecimalField(max_digits=6, decimal_places=2)
+    region = models.CharField(max_length=100, blank=True, default='')
+    cost_index = models.DecimalField(max_digits=6, decimal_places=2, default=0)
     popularity_score = models.IntegerField(default=0)
     description = models.TextField(blank=True)
 
