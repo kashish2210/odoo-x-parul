@@ -86,3 +86,26 @@ function previewAvatar(input) {
     reader.readAsDataURL(input.files[0]);
   }
 }
+
+// ---------- BANNER SLIDER ----------
+document.addEventListener('DOMContentLoaded', () => {
+  const nextBtn = document.getElementById('sliderNext');
+  const prevBtn = document.getElementById('sliderPrev');
+  const slideContainer = document.getElementById('bannerSlide');
+  
+  if (nextBtn && prevBtn && slideContainer) {
+    nextBtn.addEventListener('click', () => {
+      let items = slideContainer.querySelectorAll('.item');
+      if (items.length > 0) {
+        slideContainer.appendChild(items[0]);
+      }
+    });
+
+    prevBtn.addEventListener('click', () => {
+      let items = slideContainer.querySelectorAll('.item');
+      if (items.length > 0) {
+        slideContainer.prepend(items[items.length - 1]);
+      }
+    });
+  }
+});
